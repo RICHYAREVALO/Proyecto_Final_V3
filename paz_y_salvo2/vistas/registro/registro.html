@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Usuario</title>
+    <link rel="stylesheet" href="stylesregistro.css">
+    <script>
+        function validarFormulario() {
+            var nombre = document.getElementById("nombre").value.trim();
+            var apellido = document.getElementById("apellido").value.trim();
+            var errorNombre = document.getElementById("error-nombre");
+            var errorApellido = document.getElementById("error-apellido");
+
+            var regexLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+
+            if (!regexLetras.test(nombre)) {
+                errorNombre.textContent = "El nombre solo puede contener letras y espacios.";
+                errorNombre.style.display = "inline";
+                return false;
+            } else {
+                errorNombre.style.display = "none";
+            }
+
+            if (!regexLetras.test(apellido)) {
+                errorApellido.textContent = "El apellido solo puede contener letras y espacios.";
+                errorApellido.style.display = "inline";
+                return false;
+            } else {
+                errorApellido.style.display = "none";
+            }
+
+            return true;
+        }
+    </script>
+</head>
+
+<body>
+    <h2>Registro de Usuario</h2>
+    <form action="registro.php" method="post" onsubmit="return validarFormulario()">
+        <div class="form-group">
+            <label for="nombre">Nombre:</label><br>
+            <input type="text" id="nombre" name="nombre" required>
+            <span id="error-nombre" style="color: red; display: none;"></span>
+        </div>
+        <div class="form-group">
+            <label for="apellido">Apellido:</label><br>
+            <input type="text" id="apellido" name="apellido" required>
+            <span id="error-apellido" style="color: red; display: none;"></span>
+        </div>
+        <div class="form-group">
+            <label for="nombre_usuario">Nombre de Usuario:</label><br>
+            <input type="text" id="nombre_usuario" name="nombre_usuario" required>
+            <span id="error-nombre_usuario" style="color: red; display: none;"></span>
+        </div>
+        <div class="form-group">
+            <label for="contrasena">Contraseña:</label><br>
+            <input type="password" id="contrasena" name="contrasena" required>
+        </div>
+        <div class="form-group">
+            <label for="confirmar_contraseña">Confirmar Contraseña:</label><br>
+            <input type="password" id="confirmar_contraseña" name="confirmar_contraseña" required>
+        </div>
+        <div class="form-group">
+            <label for="tipo_documento">Tipo de Documento:</label><br>
+            <select id="tipo_documento" name="tipo_documento" required>
+                <option value="1">NIT</option>
+                <option value="2">Cedula de Ciudadania</option>
+                <option value="3">Cedula Extranjeria</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="documento_identidad">Documento de Identidad:</label><br>
+            <input type="text" id="documento_identidad" name="documento_identidad" required>
+            <span id="error-documento_identidad" style="color: red; display: none;"></span>
+        </div>
+        <div class="form-group">
+            <label for="correo_electronico">Correo Electrónico:</label><br>
+            <input type="email" id="correo_electronico" name="correo_electronico" required>
+        </div>
+        <div class="form-group">
+            <label for="departamento">Departamento:</label><br>
+            <select id="departamento" name="departamento" required>
+                <option value="1">Recursos Humanos</option>
+                <option value="2">Contabilidad</option>
+                <option value="3">IT</option>
+                <option value="4">Ventas</option>
+                <option value="5">Gerencia</option>
+
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="fecha_contratacion">Fecha de Contratación:</label><br>
+            <input type="date" id="fecha_contratacion" name="fecha_contratacion" required>
+        </div>
+        <input type="submit" value="Registrar">
+    </form>
+</body>
+
+</html>
