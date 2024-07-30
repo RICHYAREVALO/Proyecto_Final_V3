@@ -4,7 +4,7 @@ session_start();
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "paz_y_salvo2";
+$dbname = "pazysalvo_db";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -19,7 +19,7 @@ if (!isset($_SESSION['username'])) {
 
 $username = $_SESSION['username'];
 
-$sql = "SELECT u.*, t.TipoDocumento FROM Usuarios u
+$sql = "SELECT u.*, t.TipoDocumento FROM usuarios_empleados u
         LEFT JOIN TipoDocumento t ON u.TipoDocumento_ID = t.ID";
 $result = $conn->query($sql);
 
@@ -57,9 +57,6 @@ $conn->close();
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                    <a class="nav-link" href="lista_empleados.php">Lista de Empleados</a>
-                    </li>
-                    <li class="nav-item">
                     <a class="nav-link" href="../departamentos/listar_departamentos.php">Lista de Departamentos</a>
                     </li>
                     <li class="nav-item">
@@ -81,11 +78,15 @@ $conn->close();
                     <th>ID</th>
                     <th>Nombre</th>
                     <th>Apellido</th>
-                    <th>Nombre de Usuario</th>
+                    <th>Documento Identidad</th>
+                    <th>Departamento</th>
+                    <th>Nombre Usuario</th>
+                    <th>Contraseña</th>
                     <th>Rol</th>
-                    <th>Tipo de Documento</th>
-                    <th>Documento de Identidad</th>
-                    <th>Correo Electrónico</th>
+                    <th>Tipo Documento</th>
+                    <th>Correo Electronico</th>
+                    <th>Fecha Contratacion</th>
+                    <th>Fecha Retiro</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -95,11 +96,15 @@ $conn->close();
                         <td><?php echo htmlspecialchars($usuario['ID']); ?></td>
                         <td><?php echo htmlspecialchars($usuario['Nombre']); ?></td>
                         <td><?php echo htmlspecialchars($usuario['Apellido']); ?></td>
+                        <td><?php echo htmlspecialchars($usuario['DocumentoIdentidad']); ?></td>
+                        <td><?php echo htmlspecialchars($usuario['Departamento_ID']); ?></td>
                         <td><?php echo htmlspecialchars($usuario['NombreUsuario']); ?></td>
+                        <td><?php echo htmlspecialchars($usuario['Contrasena']); ?></td>
                         <td><?php echo htmlspecialchars($usuario['Rol']); ?></td>
                         <td><?php echo htmlspecialchars($usuario['TipoDocumento']); ?></td>
-                        <td><?php echo htmlspecialchars($usuario['DocumentoIdentidad']); ?></td>
                         <td><?php echo htmlspecialchars($usuario['CorreoElectronico']); ?></td>
+                        <td><?php echo htmlspecialchars($usuario['FechaContratacion']); ?></td>
+                        <td><?php echo htmlspecialchars($usuario['FechaRetiro']); ?></td>
                         <td>
                             <a href="editar_usuario.php?id=<?php echo $usuario['ID']; ?>" class="btn btn-primary">Editar</a>
                             <a href="eliminar_usuario.php?id=<?php echo $usuario['ID']; ?>" class="btn btn-danger" onclick="return confirm('No puedes eliminar este usuario porque tiene empleados asociados. Elimina los empleados primero.!')">Eliminar</a>
