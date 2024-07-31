@@ -4,7 +4,7 @@ session_start();
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "paz_y_salvo2";
+$dbname = "pazysalvo_db";
 
 // Establecer la conexión a la base de datos
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -12,23 +12,27 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 // Verificar la conexión
 if ($conn->connect_error) {
     echo "<script>alert('Error de conexión: " . $conn->connect_error . "');</script>";
+    exit;
 }
 
 // Validar la sesión antes de acceder a los datos del usuario
 if (!isset($_SESSION['username'])) {
     echo "<script>alert('Error: Debes iniciar sesión para acceder a esta página.'); window.location.href = '../login/login.php';</script>";
+    exit;
 }
 
 // Obtener el nombre de usuario de la sesión
 $username = $_SESSION['username'];
 
-// Obtener los datos del empleado asociado al usuario
+// Consultar el ID del empleado asociado al usuario
 $sql_obtener_empleado = "SELECT e.*, u.NombreUsuario, u.CorreoElectronico
-                          FROM empleados e
-                          LEFT JOIN usuarios u ON e.Usuario_ID = u.ID
-                          WHERE u.NombreUsuario = '$username'";
-
-$result_obtener_empleado = $conn->query($sql_obtener_empleado);
+                          FROM usuarios_empleados e
+                          JOIN usuarios_empleados u ON e.ID = u.ID
+                          WHERE u.NombreUsuario = ?";
+$stmt = $conn->prepare($sql_obtener_empleado);
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$result_obtener_empleado = $stmt->get_result();
 
 // Verificar si hubo un error en la consulta
 if ($result_obtener_empleado === false) {
@@ -41,8 +45,11 @@ if ($result_obtener_empleado->num_rows > 0) {
     $empleado = $result_obtener_empleado->fetch_assoc();
 
     // Consultar el estado del Paz y Salvo
-    $sql_consultar_paz_y_salvo = "SELECT Estado, Razon_Rechazo FROM Registro_Paz_Salvo WHERE Empleado_ID = {$empleado['ID']} ORDER BY Fecha_Emision DESC LIMIT 1";
-    $result_consultar_paz_y_salvo = $conn->query($sql_consultar_paz_y_salvo);
+    $sql_consultar_paz_y_salvo = "SELECT Estado, Razon_Rechazo FROM registro_paz_salvo WHERE Usuario_Empleado_ID = ? ORDER BY Fecha_Emision DESC LIMIT 1";
+    $stmt_paz_salvo = $conn->prepare($sql_consultar_paz_y_salvo);
+    $stmt_paz_salvo->bind_param("i", $empleado['ID']);
+    $stmt_paz_salvo->execute();
+    $result_consultar_paz_y_salvo = $stmt_paz_salvo->get_result();
 
     if ($result_consultar_paz_y_salvo === false) {
         echo "<script>alert('Error al consultar el estado del Paz y Salvo: " . $conn->error . "');</script>";
@@ -56,7 +63,6 @@ if ($result_obtener_empleado->num_rows > 0) {
         // Mostrar mensaje según el estado
         if ($estadoPazYSalvo === 'Aprobado') {
             echo "<script>alert('¡El Paz y Salvo ha sido aprobado!'); window.location.href = '../empleado/empleados.php';</script>";
-            // Aquí podrías agregar el enlace para descargar el Paz y Salvo
         } elseif ($estadoPazYSalvo === 'Rechazado') {
             $razonRechazo = $row['Razon_Rechazo'];
             $correoRH = 'recursohumano@beyonder.com';
@@ -69,11 +75,12 @@ if ($result_obtener_empleado->num_rows > 0) {
         echo "<script>alert('No se encontraron registros de Paz y Salvo para el empleado.'); window.location.href = '../empleado/empleados.php';</script>";
     }
 
+    $stmt_paz_salvo->close();
 } else {
     // Manejar el caso si no se encuentra el empleado
     echo "<script>alert('Error: No se encontraron datos del empleado asociado al usuario.'); window.location.href = '../empleados/empleados.php';</script>";
 }
 
-// Cerrar la conexión
+$stmt->close();
 $conn->close();
 ?>

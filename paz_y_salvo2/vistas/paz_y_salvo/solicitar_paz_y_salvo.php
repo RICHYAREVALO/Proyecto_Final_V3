@@ -4,7 +4,7 @@ session_start();
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "paz_y_salvo2";
+$dbname = "pazysalvo_db";
 
 // Establecer la conexión a la base de datos
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -26,8 +26,11 @@ $id_empleado = isset($_POST['id_empleado']) ? $_POST['id_empleado'] : null;
 // Verificar si el ID del empleado está definido
 if ($id_empleado !== null) {
     // Verificar si el empleado ya ha solicitado el paz y salvo anteriormente
-    $sql_verificar_solicitud = "SELECT COUNT(*) AS total FROM Registro_Paz_Salvo WHERE Empleado_ID = $id_empleado";
-    $result_verificar_solicitud = $conn->query($sql_verificar_solicitud);
+    $sql_verificar_solicitud = "SELECT COUNT(*) AS total FROM registro_paz_salvo WHERE Usuario_Empleado_ID = ?";
+    $stmt = $conn->prepare($sql_verificar_solicitud);
+    $stmt->bind_param("i", $id_empleado);
+    $stmt->execute();
+    $result_verificar_solicitud = $stmt->get_result();
 
     if ($result_verificar_solicitud === false) {
         echo "Error al verificar la solicitud de Paz y Salvo: " . $conn->error;
@@ -40,16 +43,22 @@ if ($id_empleado !== null) {
         // Mostrar un mensaje indicando que el empleado ya ha solicitado el paz y salvo anteriormente
         echo "<script>alert('Ya has solicitado un Paz y Salvo anteriormente'); window.history.back();</script>";
     } else {
-        // Insertar un nuevo registro en la tabla Registro_Paz_Salvo
-        $sql = "INSERT INTO Registro_Paz_Salvo (Empleado_ID, Fecha_Emision, Estado) VALUES ('$id_empleado', CURDATE(), 'Pendiente')";
+        // Insertar un nuevo registro en la tabla registro_paz_salvo
+        $sql_insert = "INSERT INTO registro_paz_salvo (Usuario_Empleado_ID, Fecha_Emision, Estado) VALUES (?, CURDATE(), 'Pendiente')";
+        $stmt_insert = $conn->prepare($sql_insert);
+        $stmt_insert->bind_param("i", $id_empleado);
 
-        if ($conn->query($sql) === TRUE) {
+        if ($stmt_insert->execute()) {
             // Mostrar el mensaje de éxito
             echo "<script>alert('Paz y Salvo solicitado exitosamente'); window.history.back();</script>";
         } else {
             echo "Error al solicitar el Paz y Salvo: " . $conn->error;
         }
+
+        $stmt_insert->close();
     }
+
+    $stmt->close();
 } else {
     echo "Error: ID del empleado no definido.";
 }
