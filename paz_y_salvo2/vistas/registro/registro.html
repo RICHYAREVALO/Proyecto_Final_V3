@@ -10,11 +10,21 @@
         function validarFormulario() {
             var nombre = document.getElementById("nombre").value.trim();
             var apellido = document.getElementById("apellido").value.trim();
+            var nombreUsuario = document.getElementById("nombre_usuario").value.trim();
+            var documentoIdentidad = document.getElementById("documento_identidad").value.trim();
+            var correoElectronico = document.getElementById("correo_electronico").value.trim();
+
             var errorNombre = document.getElementById("error-nombre");
             var errorApellido = document.getElementById("error-apellido");
+            var errorNombreUsuario = document.getElementById("error-nombre_usuario");
+            var errorDocumentoIdentidad = document.getElementById("error-documento_identidad");
+            var errorCorreoElectronico = document.getElementById("error-correo_electronico");
 
             var regexLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+            var regexDocumento = /^[0-9]+$/;
+            var regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+            // Validación de nombre
             if (!regexLetras.test(nombre)) {
                 errorNombre.textContent = "El nombre solo puede contener letras y espacios.";
                 errorNombre.style.display = "inline";
@@ -23,12 +33,40 @@
                 errorNombre.style.display = "none";
             }
 
+            // Validación de apellido
             if (!regexLetras.test(apellido)) {
                 errorApellido.textContent = "El apellido solo puede contener letras y espacios.";
                 errorApellido.style.display = "inline";
                 return false;
             } else {
                 errorApellido.style.display = "none";
+            }
+
+            // Validación de nombre de usuario
+            if (nombreUsuario.length < 3) {
+                errorNombreUsuario.textContent = "El nombre de usuario debe tener al menos 3 caracteres.";
+                errorNombreUsuario.style.display = "inline";
+                return false;
+            } else {
+                errorNombreUsuario.style.display = "none";
+            }
+
+            // Validación de documento de identidad
+            if (!regexDocumento.test(documentoIdentidad)) {
+                errorDocumentoIdentidad.textContent = "El documento de identidad solo puede contener números.";
+                errorDocumentoIdentidad.style.display = "inline";
+                return false;
+            } else {
+                errorDocumentoIdentidad.style.display = "none";
+            }
+
+            // Validación de correo electrónico
+            if (!regexCorreo.test(correoElectronico)) {
+                errorCorreoElectronico.textContent = "Correo electrónico inválido.";
+                errorCorreoElectronico.style.display = "inline";
+                return false;
+            } else {
+                errorCorreoElectronico.style.display = "none";
             }
 
             return true;
@@ -38,7 +76,7 @@
 
 <body>
     <h2>Registro de Usuario</h2>
-    <form action="registro.php" method="post" onsubmit="return validarFormulario()">
+    <form action="registro.php" method="post" enctype="multipart/form-data" onsubmit="return validarFormulario()">
         <div class="form-group">
             <label for="nombre">Nombre:</label><br>
             <input type="text" id="nombre" name="nombre" required>
@@ -66,8 +104,8 @@
             <label for="tipo_documento">Tipo de Documento:</label><br>
             <select id="tipo_documento" name="tipo_documento" required>
                 <option value="1">NIT</option>
-                <option value="2">Cedula de Ciudadania</option>
-                <option value="3">Cedula Extranjeria</option>
+                <option value="2">Cédula de Ciudadanía</option>
+                <option value="3">Cédula de Extranjería</option>
             </select>
         </div>
         <div class="form-group">
@@ -78,6 +116,7 @@
         <div class="form-group">
             <label for="correo_electronico">Correo Electrónico:</label><br>
             <input type="email" id="correo_electronico" name="correo_electronico" required>
+            <span id="error-correo_electronico" style="color: red; display: none;"></span>
         </div>
         <div class="form-group">
             <label for="departamento">Departamento:</label><br>
@@ -87,12 +126,15 @@
                 <option value="3">IT</option>
                 <option value="4">Ventas</option>
                 <option value="5">Gerencia</option>
-
             </select>
         </div>
         <div class="form-group">
             <label for="fecha_contratacion">Fecha de Contratación:</label><br>
             <input type="date" id="fecha_contratacion" name="fecha_contratacion" required>
+        </div>
+        <div class="form-group">
+            <label for="fotoPerfil">Foto de Perfil:</label><br>
+            <input type="file" id="fotoPerfil" name="fotoPerfil" accept=".jpg, .jpeg, .png, .gif">
         </div>
         <input type="submit" value="Registrar">
     </form>

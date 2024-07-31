@@ -37,7 +37,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Verifica que las contraseñas coincidan
     if ($contraseña !== $confirmarContraseña) {
-        die("Las contraseñas no coinciden. Por favor, inténtalo de nuevo.");
+        echo "<script>alert('Las contraseñas no coinciden. Por favor, inténtalo de nuevo.');window.location.href = 'registro.html';</script>";
+        exit;
     }
 
     // Hash de la contraseña
@@ -51,8 +52,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->store_result();
 
     if ($stmt->num_rows > 0) {
-        echo "<script>alert('Error: Ya existe un usuario con el nombre de usuario proporcionado, Por favor intente de nuevo');window.location.href = 'registro.html';</script>";
+        echo "<script>alert('Error: Ya existe un usuario con el nombre de usuario proporcionado.');window.location.href = 'registro.html';</script>";
         $stmt->close();
+        $conn->close();
+        exit;
     } else {
         // Verifica si ya existe un usuario con el mismo número de documento
         $sql_verificar_documento = "SELECT * FROM usuarios_empleados WHERE DocumentoIdentidad = ?";
@@ -62,22 +65,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->store_result();
 
         if ($stmt->num_rows > 0) {
-            echo "<script>alert('Error: Ya existe un usuario con el número de documento proporcionado, Por favor intente de nuevo');window.location.href = 'registro.html';</script>";
+            echo "<script>alert('Error: Ya existe un usuario con el número de documento proporcionado.');window.location.href = 'registro.html';</script>";
             $stmt->close();
+            $conn->close();
+            exit;
         } else {
-            // Si no hay ningún usuario con el mismo nombre de usuario ni número de documento, procede con la inserción
+            // Manejo de la foto de perfil
+$fotoPerfilRuta = NULL;
+if (isset($_FILES['fotoPerfil']) && $_FILES['fotoPerfil']['error'] == UPLOAD_ERR_OK) {
+    // Cambia la ruta de carga para que esté en la carpeta 'empleados/uploads'
+    $uploadDir = '../empleado/uploads/';
+    $fotoPerfilRuta = $uploadDir . basename($_FILES['fotoPerfil']['name']);
+    
+    // Mueve el archivo cargado al directorio de destino
+    if (!move_uploaded_file($_FILES['fotoPerfil']['tmp_name'], $fotoPerfilRuta)) {
+        die("Error al mover el archivo cargado.");
+    }
+}
+
             $rol = 'empleado'; // Rol predeterminado para los usuarios
 
             // Prepara y ejecuta la consulta SQL utilizando sentencias preparadas
-            $sql = "INSERT INTO usuarios_empleados (Nombre, Apellido, NombreUsuario, Contrasena, Rol, TipoDocumento_ID, DocumentoIdentidad, CorreoElectronico, Departamento_ID, FechaContratacion) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO usuarios_empleados (Nombre, Apellido, NombreUsuario, Contrasena, Rol, TipoDocumento_ID, DocumentoIdentidad, CorreoElectronico, Departamento_ID, FechaContratacion, FotoPerfil) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             $stmt = $conn->prepare($sql);
 
             if ($stmt) {
                 // Vincula los parámetros
-                $stmt->bind_param("sssssiisis", $nombre, $apellido, $nombreUsuario, $hashContraseña, $rol, $tipoDocumentoID, $documentoIdentidad, $correoElectronico, $departamentoID, $fechaContratacion);
-                
+                $stmt->bind_param("sssssiisiss", $nombre, $apellido, $nombreUsuario, $hashContraseña, $rol, $tipoDocumentoID, $documentoIdentidad, $correoElectronico, $departamentoID, $fechaContratacion, $fotoPerfilRuta);
+
                 // Ejecuta la consulta
                 if ($stmt->execute()) {
                     // Redirige al usuario después de completar el registro
