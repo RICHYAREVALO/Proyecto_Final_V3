@@ -11,7 +11,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'recursos_humanos') {
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "paz_y_salvo2";
+$dbname = "pazysalvo_db";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -30,14 +30,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && isset($_
         $razon_rechazo = $_POST['razon_rechazo'];
 
         // Actualizar el estado del registro y la razón de rechazo
-        $sql_update = "UPDATE Registro_Paz_Salvo SET Estado = ?, Razon_Rechazo = ? WHERE ID = ?";
+        $sql_update = "UPDATE registro_paz_salvo SET Estado = ?, Razon_Rechazo = ? WHERE ID = ?";
         $stmt = $conn->prepare($sql_update);
         $stmt->bind_param("ssi", $accion, $razon_rechazo, $registro_id);
         $stmt->execute();
         $stmt->close();
     } elseif ($accion === 'Aprobado') {
         // Actualizar solo el estado del registro si se aprueba
-        $sql_update = "UPDATE Registro_Paz_Salvo SET Estado = ? WHERE ID = ?";
+        $sql_update = "UPDATE registro_paz_salvo SET Estado = ? WHERE ID = ?";
         $stmt = $conn->prepare($sql_update);
         $stmt->bind_param("si", $accion, $registro_id);
         $stmt->execute();
@@ -49,24 +49,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && isset($_
 }
 
 // Consultar las solicitudes de Paz y Salvo pendientes
-$sql_pendientes = "SELECT r.*, e.Nombre, e.Apellido
-                    FROM Registro_Paz_Salvo r
-                    INNER JOIN empleados e ON r.Empleado_ID = e.ID
-                    WHERE r.Estado = 'Pendiente'";
+$sql_pendientes = "SELECT r.*, u.Nombre, u.Apellido
+                   FROM registro_paz_salvo r
+                   INNER JOIN usuarios_empleados u ON r.Usuario_Empleado_ID = u.ID
+                   WHERE r.Estado = 'Pendiente'";
 $result_pendientes = $conn->query($sql_pendientes);
 
 // Consultar las solicitudes de Paz y Salvo aprobadas
-$sql_aprobados = "SELECT r.*, e.Nombre, e.Apellido
-                    FROM Registro_Paz_Salvo r
-                    INNER JOIN empleados e ON r.Empleado_ID = e.ID
-                    WHERE r.Estado = 'Aprobado'";
+$sql_aprobados = "SELECT r.*, u.Nombre, u.Apellido
+                  FROM registro_paz_salvo r
+                  INNER JOIN usuarios_empleados u ON r.Usuario_Empleado_ID = u.ID
+                  WHERE r.Estado = 'Aprobado'";
 $result_aprobados = $conn->query($sql_aprobados);
 
 // Consultar las solicitudes de Paz y Salvo rechazadas
-$sql_rechazados = "SELECT r.*, e.Nombre, e.Apellido
-                    FROM Registro_Paz_Salvo r
-                    INNER JOIN empleados e ON r.Empleado_ID = e.ID
-                    WHERE r.Estado = 'Rechazado'";
+$sql_rechazados = "SELECT r.*, u.Nombre, u.Apellido
+                   FROM registro_paz_salvo r
+                   INNER JOIN usuarios_empleados u ON r.Usuario_Empleado_ID = u.ID
+                   WHERE r.Estado = 'Rechazado'";
 $result_rechazados = $conn->query($sql_rechazados);
 
 // Cerrar la conexión
