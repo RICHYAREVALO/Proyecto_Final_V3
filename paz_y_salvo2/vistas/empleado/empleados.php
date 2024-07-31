@@ -25,7 +25,7 @@ if (!isset($_SESSION['username'])) {
 $username = $_SESSION['username'];
 
 // Preparar una declaración SQL para obtener los datos del empleado asociado al usuario
-$stmt = $conn->prepare("SELECT ID, Nombre, Apellido, DocumentoIdentidad, NombreUsuario, CorreoElectronico 
+$stmt = $conn->prepare("SELECT ID, Nombre, Apellido, DocumentoIdentidad, NombreUsuario, CorreoElectronico, FotoPerfil 
                         FROM usuarios_empleados 
                         WHERE NombreUsuario = ?");
 $stmt->bind_param("s", $username);
@@ -47,6 +47,7 @@ if ($result_obtener_empleado->num_rows > 0) {
     $apellidoEmpleado = htmlspecialchars($empleado['Apellido']);
     $documentoIdentidadEmpleado = htmlspecialchars($empleado['DocumentoIdentidad']);
     $id_empleado = htmlspecialchars($empleado['ID']);
+    $fotoPerfil = htmlspecialchars($empleado['FotoPerfil']);
     ?>
     <!DOCTYPE html>
     <html lang="es">
@@ -67,6 +68,14 @@ if ($result_obtener_empleado->num_rows > 0) {
                     <img src="../../imagen/iconos/user.png" alt="Usuario" class="edit-icon">
                 </div>
             </h2>
+            <div class="text-center">
+                <!-- Mostrar la foto de perfil -->
+                <?php if (!empty($fotoPerfil)): ?>
+                    <img src="<?php echo $fotoPerfil; ?>" alt="Foto de Perfil" class="img-thumbnail" style="max-width: 150px;">
+                <?php else: ?>
+                    <img src="../../imagen/iconos/default-profile.png" alt="Foto de Perfil Predeterminada" class="img-thumbnail" style="max-width: 150px;">
+                <?php endif; ?>
+            </div>
             <div class="table-responsive"> <!-- Agregar clase table-responsive para hacer la tabla responsive -->
                 <table class="table table-bordered">
                     <tr>
