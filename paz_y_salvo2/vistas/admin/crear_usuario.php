@@ -1,36 +1,67 @@
 <?php
 session_start();
 
+// Conexión a la base de datos
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "pazysalvo_db";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+    die("Error de conexión: " . $conn->connect_error);
+}
+
+// Obtener departamentos
+$departamentos = [];
+$departamentoQuery = "SELECT ID, Nombre FROM departamentos";
+$result = $conn->query($departamentoQuery);
+
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $departamentos[] = $row;
+    }
+} else {
+    echo "No se encontraron departamentos.";
+}
+
+// Procesar formulario si se envía
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "pazysalvo_db";
+    // Sanitizar y validar las entradas del usuario
+    $nombre = filter_var(trim($_POST['nombre']), FILTER_SANITIZE_STRING);
+    $apellido = filter_var(trim($_POST['apellido']), FILTER_SANITIZE_STRING);
+    $nombreUsuario = filter_var(trim($_POST['nombreUsuario']), FILTER_SANITIZE_STRING);
+    $contrasena = password_hash($_POST['contrasena'], PASSWORD_DEFAULT);
+    $rol = filter_var(trim($_POST['rol']), FILTER_SANITIZE_STRING);
+    $TipoDocumentoID = filter_var($_POST['tipo_documento'], FILTER_SANITIZE_NUMBER_INT);
+    $DocumentoIdentidad = filter_var(trim($_POST['DocumentoIdentidad']), FILTER_SANITIZE_STRING);
+    $CorreoElectronico = filter_var(trim($_POST['CorreoElectronico']), FILTER_VALIDATE_EMAIL);
+    $FechaContratacion = $_POST['FechaContratacion'];
+    $FechaRetiro = isset($_POST['FechaRetiro']) ? $_POST['FechaRetiro'] : null;
+    $DepartamentoID = filter_var($_POST['departamento'], FILTER_SANITIZE_NUMBER_INT);
 
-    $conn = new mysqli($servername, $username, $password, $dbname);
-
-    if ($conn->connect_error) {
-        die("Error de conexión: " . $conn->connect_error);
+    if (!$CorreoElectronico) {
+        echo "Correo electrónico inválido.";
+        exit;
     }
 
-    // Sanitizar y validar las entradas del usuario
-    $nombre = filter_var($_POST['nombre'], FILTER_SANITIZE_STRING);
-    $apellido = filter_var($_POST['apellido'], FILTER_SANITIZE_STRING);
-    $nombreUsuario = filter_var($_POST['nombreUsuario'], FILTER_SANITIZE_STRING);
-    $contrasena = password_hash($_POST['contrasena'], PASSWORD_DEFAULT);
-    $rol = filter_var($_POST['rol'], FILTER_SANITIZE_STRING);
-    $TipoDocumentoID = filter_var($_POST['tipo_documento'], FILTER_SANITIZE_NUMBER_INT);
-    $DocumentoIdentidad = filter_var($_POST['DocumentoIdentidad'], FILTER_SANITIZE_STRING);
-    $CorreoElectronico = filter_var($_POST['CorreoElectronico'], FILTER_SANITIZE_EMAIL);
-    $FechaContratacion = $_POST['FechaContratacion']; // Suponemos que el formato de fecha es correcto
-    $FechaRetiro = isset($_POST['FechaRetiro']) ? $_POST['FechaRetiro'] : null; // Puede ser opcional
+    // Validación adicional para fechas
+    if (!DateTime::createFromFormat('Y-m-d', $FechaContratacion)) {
+        echo "Fecha de contratación inválida.";
+        exit;
+    }
+    if ($FechaRetiro && !DateTime::createFromFormat('Y-m-d', $FechaRetiro)) {
+        echo "Fecha de retiro inválida.";
+        exit;
+    }
 
-    $stmt = $conn->prepare("INSERT INTO usuarios_empleados (Nombre, Apellido, NombreUsuario, Contrasena, Rol, TipoDocumento_ID, DocumentoIdentidad, CorreoElectronico, FechaContratacion, FechaRetiro) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssssssssss", $nombre, $apellido, $nombreUsuario, $contrasena, $rol, $TipoDocumentoID, $DocumentoIdentidad, $CorreoElectronico, $FechaContratacion, $FechaRetiro);
+    $stmt = $conn->prepare("INSERT INTO usuarios_empleados (Nombre, Apellido, NombreUsuario, Contrasena, Rol, TipoDocumento_ID, DocumentoIdentidad, CorreoElectronico, FechaContratacion, FechaRetiro, Departamento_ID) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssssssss", $nombre, $apellido, $nombreUsuario, $contrasena, $rol, $TipoDocumentoID, $DocumentoIdentidad, $CorreoElectronico, $FechaContratacion, $FechaRetiro, $DepartamentoID);
 
     if ($stmt->execute()) {
-        header("Location: admin.php");
+        header("Location: admin.php?success=1");
         exit;
     } else {
         echo "Error al agregar nuevo usuario: " . $stmt->error;
@@ -54,6 +85,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="container">
         <h3 class="mt-4">Crear Nuevo Usuario</h3>
+        <?php
+        if (isset($_GET['success']) && $_GET['success'] == 1) {
+            echo '<div class="alert alert-success">Usuario creado exitosamente.</div>';
+        }
+        ?>
         <form action="crear_usuario.php" method="post">
 
             <div class="mb-3">
@@ -112,6 +148,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="mb-3">
                 <label for="FechaRetiro" class="form-label">Fecha de Retiro:</label>
                 <input type="date" id="FechaRetiro" name="FechaRetiro" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label for="departamento" class="form-label">Departamento:</label>
+                <select id="departamento" name="departamento" class="form-select" required>
+                    <?php foreach ($departamentos as $departamento): ?>
+                        <option value="<?php echo htmlspecialchars($departamento['ID']); ?>">
+                            <?php echo htmlspecialchars($departamento['Nombre']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
 
             <button type="submit" class="btn btn-primary">Crear Usuario</button>

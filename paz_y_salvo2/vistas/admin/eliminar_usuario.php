@@ -1,72 +1,3 @@
-<?php
-session_start();
-
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "paz_y_salvo2";
-
-    $conn = new mysqli($servername, $username, $password, $dbname);
-
-    if ($conn->connect_error) {
-        die("Error de conexión: " . $conn->connect_error);
-    }
-
-    // Validating the ID
-    $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-
-    if ($id <= 0) {
-        echo "ID de usuario no válido";
-        exit;
-    }
-
-    // Verifying if the ID exists in the database
-    $check_stmt = $conn->prepare("SELECT ID FROM Usuarios WHERE ID = ?");
-    $check_stmt->bind_param("i", $id);
-    $check_stmt->execute();
-    $check_stmt->store_result();
-
-    if ($check_stmt->num_rows === 0) {
-        echo "ID de usuario no encontrado en la base de datos";
-        exit;
-    }
-
-    // Verifying if there are employees associated with this user
-    $check_employees_stmt = $conn->prepare("SELECT ID FROM Empleados WHERE Usuario_ID = ?");
-    $check_employees_stmt->bind_param("i", $id);
-    $check_employees_stmt->execute();
-    $check_employees_stmt->store_result();
-
-    if ($check_employees_stmt->num_rows > 0) {
-        echo "No puedes eliminar este usuario porque tiene empleados asociados. Elimina los empleados primero.";
-        exit;
-    }
-
-    // Deleting the user
-    $delete_stmt = $conn->prepare("DELETE FROM Usuarios WHERE ID = ?");
-    $delete_stmt->bind_param("i", $id);
-
-    if ($delete_stmt->execute()) {
-        // Showing success message
-        echo "Usuario eliminado exitosamente";
-
-        // Redirecting with an appropriate HTTP response code
-        header('Location: admin.php', true, 303);
-        exit;
-    } else {
-        echo "Error al procesar la solicitud: " . $delete_stmt->error;
-    }
-
-    $check_stmt->close();
-    $check_employees_stmt->close();
-    $delete_stmt->close();
-    $conn->close();
-} else {
-    echo "Acceso no autorizado";
-}
-?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -79,25 +10,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <h3 class="mt-4">Eliminar Usuario</h3>
-        <div class="alert alert-warning mt-3" role="alert">
-            <i class="bi bi-exclamation-triangle-fill"></i> No puedes eliminar este usuario porque tiene empleados asociados. Elimina los empleados primero.!
+    <div class="container mt-4">
+        <h3>Eliminar Usuario</h3>
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> ¿Estás seguro de que deseas eliminar este usuario? Esta acción es irreversible.
         </div>
+
         <div class="mt-3">
             <a href="admin.php" class="btn btn-secondary me-2"><i class="bi bi-arrow-left"></i> Volver</a>
-            <button id="confirmDeleteBtn" class="btn btn-danger"><i class="bi bi-trash"></i> Eliminar Usuario</button>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"><i class="bi bi-trash"></i> Eliminar Usuario</button>
         </div>
     </div>
 
-    <!-- Bootstrap JS (optional) -->
+    <!-- Modal de confirmación -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro de que deseas eliminar este usuario? Esta acción es irreversible.
+                </div>
+                <div class="modal-footer">
+                    <form id="deleteForm" method="POST" action="admin.php">
+                        <input type="hidden" name="id" id="userIdToDelete">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS (incluye Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-        if (confirm('No puedes eliminar este usuario porque tiene empleados asociados. ¿Deseas ir a la lista de empleados?')) {
-            window.location.href = 'lista_empleados.php';
-        }
+    // Obtener el ID del usuario desde los parámetros de la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('id');
+
+    // Manejar el evento de apertura del modal
+    var confirmDeleteModal = document.getElementById('confirmDeleteModal');
+    confirmDeleteModal.addEventListener('show.bs.modal', function () {
+        var userIdInput = document.getElementById('userIdToDelete');
+        userIdInput.value = userId;
     });
-</script>
+    </script>
 </body>
 </html>

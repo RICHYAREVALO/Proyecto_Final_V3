@@ -4,14 +4,17 @@ session_start();
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "paz_y_salvo2";
+$dbname = "pazysalvo_db";
 
+// Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
 
+// Check connection
 if ($conn->connect_error) {
     die("Error de conexión: " . $conn->connect_error);
 }
 
+// Check if user is logged in
 if (!isset($_SESSION['username'])) {
     header('Location: ../login/login.php');
     exit;
@@ -19,17 +22,19 @@ if (!isset($_SESSION['username'])) {
 
 $username = $_SESSION['username'];
 
+// Validate 'id' parameter
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id = $_GET['id'];
 
-    $stmt = $conn->prepare("SELECT u.*, t.TipoDocumento FROM Usuarios u
+    // Prepare and execute the query
+    $stmt = $conn->prepare("SELECT u.*, t.TipoDocumento FROM usuarios_empleados u
                             LEFT JOIN TipoDocumento t ON u.TipoDocumento_ID = t.ID
                             WHERE u.ID = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
-
     $result = $stmt->get_result();
 
+    // Fetch the user data
     if ($result) {
         $usuario = $result->fetch_assoc();
 
@@ -48,6 +53,19 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     exit;
 }
 
+// Obtener la lista de departamentos
+$departamentos = [];
+$departamentoQuery = "SELECT ID, Nombre FROM departamentos";
+$result = $conn->query($departamentoQuery);
+
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $departamentos[] = $row;
+    }
+} else {
+    echo "No se encontraron departamentos.";
+}
+
 $conn->close();
 ?>
 
@@ -59,7 +77,6 @@ $conn->close();
     <title>Editar Usuario</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="">
 </head>
 <body>
     <div class="container">
@@ -81,10 +98,10 @@ $conn->close();
                 </div>
             </div>
         </nav>
-        <h2 class="mt-4">Bienvenido, <?php echo isset($username) ? htmlspecialchars($username) : ''; ?>!</h2>
+        <h2 class="mt-4">Bienvenido, <?php echo htmlspecialchars($username); ?>!</h2>
         <h3 class="mt-3">Editar Usuario</h3>
         <form action="guardar_edicion_usuario.php" method="POST">
-            <input type="hidden" name="id" value="<?php echo $usuario['ID']; ?>">
+            <input type="hidden" name="id" value="<?php echo htmlspecialchars($usuario['ID']); ?>">
             
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre:</label>
@@ -118,20 +135,42 @@ $conn->close();
             <div class="mb-3">
                 <label for="tipo" class="form-label">Tipo Documento:</label>
                 <select id="tipo" name="tipo" class="form-select" required>
-                    <option value="1" <?php echo ($usuario['TipoDocumento'] === 'Cedula') ? 'selected' : ''; ?>>NIT</option>
-                    <option value="2" <?php echo ($usuario['TipoDocumento'] === 'Cedula Extranjeria') ? 'selected' : ''; ?>>Cedula Ciudadania</option>
-                    <option value="3" <?php echo ($usuario['TipoDocumento'] === 'Cedula Extranjeria') ? 'selected' : ''; ?>>Cedula Extrajenria</option>
+                    <option value="1" <?php echo ($usuario['TipoDocumento'] === 'Cedula') ? 'selected' : ''; ?>>Cedula</option>
+                    <option value="2" <?php echo ($usuario['TipoDocumento'] === 'Cedula Extranjeria') ? 'selected' : ''; ?>>Cedula Extranjeria</option>
+                    <option value="3" <?php echo ($usuario['TipoDocumento'] === 'Cedula Extranjera') ? 'selected' : ''; ?>>Cedula Extranjera</option>
                 </select>
             </div>
 
             <div class="mb-3">
-                <label for="Numero" class="form-label">Número Documento:</label>
-                <input type="number" id="Numero" name="Numero" class="form-control" value="<?php echo htmlspecialchars($usuario['DocumentoIdentidad']); ?>" required>
+                <label for="numero" class="form-label">Número Documento:</label>
+                <input type="text" id="numero" name="numero" class="form-control" value="<?php echo htmlspecialchars($usuario['DocumentoIdentidad']); ?>" required>
             </div>
 
             <div class="mb-3">
                 <label for="correo" class="form-label">Correo Electrónico:</label>
-                <input type='email' id="correo" name="correo" class="form-control" value="<?php echo htmlspecialchars($usuario['CorreoElectronico']); ?>" required>
+                <input type="email" id="correo" name="correo" class="form-control" value="<?php echo htmlspecialchars($usuario['CorreoElectronico']); ?>" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="fechaContratacion" class="form-label">Fecha de Contratación:</label>
+                <input type="date" id="fechaContratacion" name="fechaContratacion" class="form-control" value="<?php echo htmlspecialchars($usuario['FechaContratacion']); ?>">
+            </div>
+
+            <div class="mb-3">
+                <label for="fechaRetiro" class="form-label">Fecha de Retiro:</label>
+                <input type="date" id="fechaRetiro" name="fechaRetiro" class="form-control" value="<?php echo htmlspecialchars($usuario['FechaRetiro']); ?>">
+            </div>
+
+            <div class="mb-3">
+                <label for="departamento" class="form-label">Departamento:</label>
+                <select id="departamento" name="departamento" class="form-select" required>
+                    <?php foreach ($departamentos as $departamento): ?>
+                        <option value="<?php echo htmlspecialchars($departamento['ID']); ?>"
+                            <?php echo ($departamento['ID'] === intval($usuario['Departamento_ID'])) ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($departamento['Nombre']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
 
             <button type="submit" class="btn btn-primary">Guardar Cambios</button>
