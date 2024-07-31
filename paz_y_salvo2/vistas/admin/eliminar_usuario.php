@@ -1,3 +1,51 @@
+<?php
+session_start();
+
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "pazysalvo_db";
+
+// Crear conexión
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Comprobar conexión
+if ($conn->connect_error) {
+    die("Error de conexión: " . $conn->connect_error);
+}
+
+// Verificar que el usuario esté autenticado
+if (!isset($_SESSION['username'])) {
+    header('Location: login.php');
+    exit;
+}
+
+// Verificar que se ha enviado el ID del usuario
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
+    $id = intval($_POST['id']);
+
+    // Preparar la consulta de eliminación
+    $stmt = $conn->prepare("DELETE FROM usuarios_empleados WHERE ID = ?");
+    $stmt->bind_param("i", $id);
+
+    // Ejecutar la consulta
+    if ($stmt->execute()) {
+        // Redirigir a admin.php después de eliminar
+        header('Location: admin.php');
+        exit();
+    } else {
+        echo "Error al eliminar el usuario: " . $stmt->error;
+    }
+
+    $stmt->close();
+} else {
+    
+}
+
+$conn->close();
+?>
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -34,7 +82,7 @@
                     ¿Estás seguro de que deseas eliminar este usuario? Esta acción es irreversible.
                 </div>
                 <div class="modal-footer">
-                    <form id="deleteForm" method="POST" action="admin.php">
+                    <form id="deleteForm" method="POST" action="eliminar_usuario.php">
                         <input type="hidden" name="id" id="userIdToDelete">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-danger">Eliminar</button>

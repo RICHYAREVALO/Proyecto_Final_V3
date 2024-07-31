@@ -4,7 +4,7 @@ session_start();
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "paz_y_salvo2";
+$dbname = "pazysalvo_db";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -56,9 +56,6 @@ $conn->close();
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                    <a class="nav-link" href="../admin/lista_empleados.php">Lista de Empleados</a>
-                    </li>
-                    <li class="nav-item">
                     <a class="nav-link" href="../admin/admin.php">Lista de Usuarios</a>
                     </li>
                     <li class="nav-item">
@@ -87,7 +84,7 @@ $conn->close();
                 <?php foreach ($departamentos as $departamento) : ?>
                     <tr>
                         <td><?php echo htmlspecialchars($departamento['ID']); ?></td>
-                        <td><?php echo htmlspecialchars($departamento['Nombre_Departamento']); ?></td>
+                        <td><?php echo htmlspecialchars($departamento['Nombre']); ?></td>
                         <!-- Agrega más columnas si es necesario -->
                         <td>
                             <a href="editar_departamento.php?id=<?php echo $departamento['ID']; ?>" class="btn btn-primary">Editar</a>
