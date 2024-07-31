@@ -3,29 +3,36 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "paz_y_salvo2";
+$dbname = "pazysalvo_db";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
+
 if ($conn->connect_error) {
     die("Error de conexión: " . $conn->connect_error);
 }
 
+// Inicializar variables
+$mensaje = $error = "";
+
 // Verificar si se ha enviado el formulario de creación
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["nombre_departamento"])) {
-    $nombre_departamento = $_POST["nombre_departamento"];
-    $descripcion = $_POST["descripcion"]; // Nuevo campo de descripción
+    $nombre_departamento = trim($_POST["nombre_departamento"]);
 
     // Insertar el nuevo departamento en la base de datos
-    $sql = "INSERT INTO departamentos (Nombre_Departamento, Descripcion) VALUES (?, ?)";
+    $sql = "INSERT INTO departamentos (Nombre) VALUES (?)"; // Usar el nombre de columna correcto
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $nombre_departamento, $descripcion);
+    $stmt->bind_param("s", $nombre_departamento);
 
     if ($stmt->execute()) {
-        // Redireccionar a la lista de departamentos
-        header('Location: listar_departamentos.php');
-        exit;
+        $mensaje = "Departamento creado exitosamente.";
+        // Redirigir después de un breve retraso para mostrar el mensaje
+        echo "<script>
+            setTimeout(function() {
+                window.location.href = 'listar_departamentos.php';
+            }, 1500);
+        </script>";
     } else {
-        echo "Error al crear el departamento: " . $conn->error;
+        $error = "Error al crear el departamento: " . $conn->error;
     }
 
     $stmt->close();
@@ -44,17 +51,18 @@ $conn->close();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <h2 class="mt-3">Crear Nuevo Departamento</h2>
+    <div class="container mt-4">
+        <h2>Crear Nuevo Departamento</h2>
+        <?php if ($mensaje) : ?>
+            <div class="alert alert-success"><?php echo $mensaje; ?></div>
+        <?php endif; ?>
+        <?php if ($error) : ?>
+            <div class="alert alert-danger"><?php echo $error; ?></div>
+        <?php endif; ?>
         <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
             <div class="mb-3">
                 <label for="nombre_departamento" class="form-label">Nombre del Departamento:</label>
                 <input type="text" name="nombre_departamento" class="form-control" required>
-            </div>
-            <!-- Nuevo campo de descripción -->
-            <div class="mb-3">
-                <label for="descripcion" class="form-label">Descripción:</label>
-                <textarea name="descripcion" class="form-control" rows="3"></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Crear</button>
         </form>
@@ -62,7 +70,7 @@ $conn->close();
         <a href="listar_departamentos.php" class="btn btn-secondary mt-3">Volver a la lista de departamentos</a>
     </div>
 
-    <!-- Bootstrap JS (optional) -->
+    <!-- Bootstrap JS (opcional) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "paz_y_salvo2";
+$dbname = "pazysalvo_db";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
@@ -12,32 +12,31 @@ if ($conn->connect_error) {
 
 // Inicializar variables
 $mensaje = $error = "";
-$departamento_id = $nuevo_nombre_departamento = $nueva_descripcion = "";
+$departamento_id = $nuevo_nombre_departamento = "";
 
 // Verificar si se ha enviado el formulario de actualización
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["departamento_id"], $_POST["nuevo_nombre_departamento"], $_POST["nueva_descripcion"])) {
-    $departamento_id = $_POST["departamento_id"];
-    $nuevo_nombre_departamento = $_POST["nuevo_nombre_departamento"];
-    $nueva_descripcion = $_POST["nueva_descripcion"];
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["departamento_id"], $_POST["nuevo_nombre_departamento"])) {
+    $departamento_id = intval($_POST["departamento_id"]);
+    $nuevo_nombre_departamento = trim($_POST["nuevo_nombre_departamento"]);
 
-    // Actualizar el nombre del departamento y la descripción en la base de datos
-    $sql = "UPDATE departamentos SET Nombre_Departamento = ?, Descripcion = ? WHERE ID = ?";
+    // Actualizar el nombre del departamento en la base de datos
+    $sql = "UPDATE departamentos SET Nombre = ? WHERE ID = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssi", $nuevo_nombre_departamento, $nueva_descripcion, $departamento_id);
+    $stmt->bind_param("si", $nuevo_nombre_departamento, $departamento_id);
 
     if ($stmt->execute()) {
-        $mensaje = "Nombre del departamento y descripción actualizados exitosamente.";
+        $mensaje = "Nombre del departamento actualizado exitosamente.";
     } else {
-        $error = "Error al actualizar el nombre del departamento y descripción: " . $conn->error;
+        $error = "Error al actualizar el nombre del departamento: " . $conn->error;
     }
 
     $stmt->close();
 } elseif (isset($_GET['id'])) {
     // Obtener el ID del departamento de la URL
-    $departamento_id = $_GET['id'];
+    $departamento_id = intval($_GET['id']);
 
     // Consulta SQL para obtener los datos actuales del departamento
-    $sql = "SELECT Nombre_Departamento, Descripcion FROM departamentos WHERE ID = ?";
+    $sql = "SELECT Nombre FROM departamentos WHERE ID = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $departamento_id);
     $stmt->execute();
@@ -46,8 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["departamento_id"], $_P
     // Obtener los datos del departamento
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        $nuevo_nombre_departamento = $row["Nombre_Departamento"];
-        $nueva_descripcion = $row["Descripcion"];
+        $nuevo_nombre_departamento = htmlspecialchars($row["Nombre"]);
     } else {
         $error = "No se encontró el departamento con el ID especificado.";
     }
@@ -68,10 +66,15 @@ $conn->close();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <h2 class="mt-3">Actualizar Nombre y Descripción del Departamento</h2>
+    <div class="container mt-4">
+        <h2>Actualizar Nombre del Departamento</h2>
         <?php if ($mensaje) : ?>
             <div class="alert alert-success"><?php echo $mensaje; ?></div>
+            <script>
+                setTimeout(function() {
+                    window.location.href = 'listar_departamentos.php';
+                }, 1500);
+            </script>
         <?php endif; ?>
         <?php if ($error) : ?>
             <div class="alert alert-danger"><?php echo $error; ?></div>
@@ -82,18 +85,13 @@ $conn->close();
                 <label for="nuevo_nombre_departamento" class="form-label">Nuevo Nombre del Departamento:</label>
                 <input type="text" name="nuevo_nombre_departamento" class="form-control" value="<?php echo htmlspecialchars($nuevo_nombre_departamento); ?>" required>
             </div>
-            <!-- Nuevo campo de descripción -->
-            <div class="mb-3">
-                <label for="nueva_descripcion" class="form-label">Nueva Descripción:</label>
-                <textarea name="nueva_descripcion" class="form-control" rows="3"><?php echo htmlspecialchars($nueva_descripcion); ?></textarea>
-            </div>
             <button type="submit" class="btn btn-primary">Actualizar</button>
         </form>
         <!-- Botón para regresar a la lista de departamentos -->
         <a href="listar_departamentos.php" class="btn btn-secondary mt-3">Regresar a la lista de departamentos</a>
     </div>
 
-    <!-- Bootstrap JS (optional) -->
+    <!-- Bootstrap JS (opcional) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -107,8 +107,8 @@ $conn->close();
                         <td><?php echo htmlspecialchars($usuario['FechaRetiro']); ?></td>
                         <td>
                             <a href="editar_usuario.php?id=<?php echo $usuario['ID']; ?>" class="btn btn-primary">Editar</a>
-                            <a href="eliminar_usuario.php?id=<?php echo $usuario['ID']; ?>" class="btn btn-danger" onclick="return confirm('No puedes eliminar este usuario porque tiene empleados asociados. Elimina los empleados primero.!')">Eliminar</a>
-                        </td>
+                            <a href="eliminar_usuario.php?id=<?php echo $usuario['ID']; ?>" class="btn btn-danger">Eliminar</a>
+                    </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
