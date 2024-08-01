@@ -8,10 +8,10 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'recursos_humanos') {
 }
 
 // Establecer la conexión a la base de datos
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "pazysalvo_db";
+$servername = "bkqu3uk3ewxyehltqf2t-mysql.services.clever-cloud.com";
+$username = "uwwounruhaizndvh";
+$password = "91JGBP3BP37TC6be2NIi";
+$dbname = "bkqu3uk3ewxyehltqf2t";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 

@@ -2,10 +2,10 @@
 session_start();
 
 // Variables de conexión a la base de datos
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "pazysalvo_db";
+$servername = "bkqu3uk3ewxyehltqf2t-mysql.services.clever-cloud.com";
+$username = "uwwounruhaizndvh";
+$password = "91JGBP3BP37TC6be2NIi";
+$dbname = "bkqu3uk3ewxyehltqf2t";
 
 // Establecer la conexión a la base de datos
 $conn = new mysqli($servername, $username, $password, $dbname);

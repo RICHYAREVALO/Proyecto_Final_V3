@@ -4,10 +4,10 @@ session_start();
 // Verifica si el formulario se ha enviado
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Conexión a la base de datos
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "paz_y_salvo2";
+    $servername = "bkqu3uk3ewxyehltqf2t-mysql.services.clever-cloud.com";
+    $username = "uwwounruhaizndvh";
+    $password = "91JGBP3BP37TC6be2NIi";
+    $dbname = "bkqu3uk3ewxyehltqf2t";
 
     $conn = new mysqli($servername, $username, $password, $dbname);
 

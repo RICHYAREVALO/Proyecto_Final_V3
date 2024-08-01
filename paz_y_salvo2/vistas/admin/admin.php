@@ -1,10 +1,9 @@
 <?php
 session_start();
-
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "pazysalvo_db";
+$servername = "bkqu3uk3ewxyehltqf2t-mysql.services.clever-cloud.com";
+$username = "uwwounruhaizndvh";
+$password = "91JGBP3BP37TC6be2NIi";
+$dbname = "bkqu3uk3ewxyehltqf2t";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -23,9 +22,14 @@ $username = $_SESSION['username'];
 $search = isset($_POST['search']) ? trim($_POST['search']) : '';
 
 // Consulta SQL con filtro de búsqueda
-$sql = "SELECT u.*, t.TipoDocumento FROM usuarios_empleados u
-        LEFT JOIN TipoDocumento t ON u.TipoDocumento_ID = t.ID
-        WHERE u.Nombre LIKE ? OR u.Apellido LIKE ? OR u.NombreUsuario LIKE ?";
+$sql = "SELECT u.*, t.tipodocumento, d.Nombre AS NombreDepartamento
+FROM usuarios_empleados u
+LEFT JOIN tipodocumento t ON u.tipodocumento_ID = t.ID
+LEFT JOIN departamentos d ON u.departamento_ID = d.ID
+WHERE u.Nombre LIKE ? 
+   OR u.Apellido LIKE ? 
+   OR u.NombreUsuario LIKE ?;
+";
 
 // Preparar y ejecutar la consulta
 $stmt = $conn->prepare($sql);
@@ -90,6 +94,8 @@ $conn->close();
             <input type="text" name="search" class="form-control" placeholder="Buscar por nombre, apellido o usuario" value="<?php echo htmlspecialchars($search); ?>">
             <button class="btn btn-primary" type="submit">Buscar</button>
         </div>
+        <br>
+        <br>
     </form>
 
     <table class="table table-striped">
@@ -99,7 +105,7 @@ $conn->close();
                 <th>Nombre</th>
                 <th>Apellido</th>
                 <th>Documento Identidad</th>
-                <th>Departamento</th>
+                <th>Area</th>
                 <th>Nombre Usuario</th>
                 <th>Contraseña</th>
                 <th>Rol</th>
@@ -117,11 +123,11 @@ $conn->close();
                     <td><?php echo htmlspecialchars($usuario['Nombre']); ?></td>
                     <td><?php echo htmlspecialchars($usuario['Apellido']); ?></td>
                     <td><?php echo htmlspecialchars($usuario['DocumentoIdentidad']); ?></td>
-                    <td><?php echo htmlspecialchars($usuario['Departamento_ID']); ?></td>
+                    <td><?php echo htmlspecialchars($usuario['NombreDepartamento']); ?></td>
                     <td><?php echo htmlspecialchars($usuario['NombreUsuario']); ?></td>
                     <td><?php echo htmlspecialchars($usuario['Contrasena']); ?></td>
                     <td><?php echo htmlspecialchars($usuario['Rol']); ?></td>
-                    <td><?php echo htmlspecialchars($usuario['TipoDocumento']); ?></td>
+                    <td><?php echo htmlspecialchars($usuario['tipodocumento']); ?></td>
                     <td><?php echo htmlspecialchars($usuario['CorreoElectronico']); ?></td>
                     <td><?php echo htmlspecialchars($usuario['FechaContratacion']); ?></td>
                     <td><?php echo htmlspecialchars($usuario['FechaRetiro']); ?></td>
