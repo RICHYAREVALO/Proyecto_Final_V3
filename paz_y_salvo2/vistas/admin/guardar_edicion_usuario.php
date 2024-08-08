@@ -26,7 +26,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $documentoIdentidad = htmlspecialchars($_POST['numero']);
     $correoElectronico = htmlspecialchars($_POST['correo']);
     $fechaContratacion = isset($_POST['fechaContratacion']) ? $_POST['fechaContratacion'] : null;
-    $fechaRetiro = isset($_POST['fechaRetiro']) ? $_POST['fechaRetiro'] : null;
+    $fechaRetiro = isset($_POST['fechaRetiro']) && !empty($_POST['fechaRetiro']) ? $_POST['fechaRetiro'] : null;
+
+// Ahora usa $fechaRetiro en tu consulta de actualización. Si es null, no lo actualices.
+
     $departamentoID = isset($_POST['departamento']) ? intval($_POST['departamento']) : 0;
 
     // Iniciar una transacción

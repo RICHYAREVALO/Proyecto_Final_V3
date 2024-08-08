@@ -157,9 +157,10 @@ $conn->close();
             </div>
 
             <div class="mb-3">
-                <label for="fechaRetiro" class="form-label">Fecha de Retiro:</label>
-                <input type="date" id="fechaRetiro" name="fechaRetiro" class="form-control" value="<?php echo htmlspecialchars($usuario['FechaRetiro']); ?>">
-            </div>
+    <label for="fechaRetiro" class="form-label">Fecha de Retiro:</label>
+    <input type="date" id="fechaRetiro" name="fechaRetiro" class="form-control" value="<?php echo htmlspecialchars($usuario['FechaRetiro']); ?>">
+</div>
+
 
             <div class="mb-3">
                 <label for="departamento" class="form-label">Departamento:</label>
