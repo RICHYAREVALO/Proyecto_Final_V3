@@ -28,7 +28,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 
     // Prepare and execute the query
     $stmt = $conn->prepare("SELECT u.*, t.TipoDocumento FROM usuarios_empleados u
-                            LEFT JOIN TipoDocumento t ON u.TipoDocumento_ID = t.ID
+                            LEFT JOIN tipodocumento t ON u.TipoDocumento_ID = t.ID
                             WHERE u.ID = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
