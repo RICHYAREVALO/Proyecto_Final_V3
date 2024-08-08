@@ -91,7 +91,7 @@ if ($result_obtener_empleado->num_rows > 0) {
                 die("La imagen no se encuentra en la ruta especificada.");
             }
 
-            $contenido = "Fecha de Generación: " . $fecha_generacion . "\n\n\n\n\n";
+            $contenido = "Fecha de Generación: " . $fecha_generacion . "\n\n\n\n\n\n\n\n\n\n";
             $contenido .= "Reciba un cordial saludo\n\n\n";
             $contenido .= "Por medio de la presente, nuestra empresa Be Yonder Colombia SAS con Nit 901263518-1\n";
             $contenido .= "Informa que el Señor@ " . $empleado['Nombre'] . " " . $empleado['Apellido'] . " Identificado con el numero de documento " . $empleado['DocumentoIdentidad'] . "\n";
