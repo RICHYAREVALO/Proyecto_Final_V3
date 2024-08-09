@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $hashContraseña = password_hash($nuevaContraseña, PASSWORD_DEFAULT);
 
     // Verifica si el usuario existe en la tabla de usuarios
-    $sql_verificar_usuario = "SELECT * FROM usuarios WHERE NombreUsuario = '$nombreUsuario'";
+    $sql_verificar_usuario = "SELECT * FROM usuarios_empleados WHERE NombreUsuario = '$nombreUsuario'";
     $result_verificar_usuario = $conn->query($sql_verificar_usuario);
 
     if ($result_verificar_usuario->num_rows == 0) {
@@ -49,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Actualiza la contraseña en la tabla de usuarios
-    $sql_actualizar_contraseña = "UPDATE usuarios SET Contraseña = '$hashContraseña' WHERE NombreUsuario = '$nombreUsuario'";
+    $sql_actualizar_contraseña = "UPDATE usuarios_empleados SET Contrasena = '$hashContraseña' WHERE NombreUsuario = '$nombreUsuario'";
     if ($conn->query($sql_actualizar_contraseña) === TRUE) {
         // Contraseña actualizada correctamente, mostrar alerta y redireccionar al usuario a la página de index.php
         echo "<script>alert('Contraseña actualizada correctamente.'); window.location.href = '../../index.php';</script>";
