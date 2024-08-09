@@ -94,7 +94,7 @@ if ($result_obtener_empleado->num_rows > 0) {
             $contenido = "Fecha de Generación: " . $fecha_generacion . "\n\n\n\n\n\n\n\n\n\n";
             $contenido .= "Reciba un cordial saludo\n\n\n";
             $contenido .= "Por medio de la presente, nuestra empresa Be Yonder Colombia SAS con Nit 901263518-1\n";
-            $contenido .= "Informa que el Señor@ " . $empleado['Nombre'] . " " . $empleado['Apellido'] . " Identificado con el numero de documento " . $empleado['DocumentoIdentidad'] . "\n";
+            $contenido .= "Informa que el Señor@ " . $empleado['Nombre'] . " " . $empleado['Apellido'] . " Identificado con el numero de documento " . $empleado['DocumentoIdentidad'] . " ";
             $contenido .= "Se encuentra a Paz Y Salvo por todo concepto con nuestra organización.\n\n\n\n";
             $contenido .= "Datos del Empleado Solicitante:\n";
             $contenido .= "Nombre: " . $empleado['Nombre'] . "\n";
