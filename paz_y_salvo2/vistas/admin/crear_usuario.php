@@ -2,7 +2,6 @@
 session_start();
 
 // Conexión a la base de datos
-// Datos de conexión a la base de datos
 $servername = "bjgxtiqfs78pgiy7qzux-mysql.services.clever-cloud.com";
 $username = "udb0mb339gpdtxkh";
 $password = "0PRRJnHNJEdZdU9pCHYR";
@@ -39,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $DocumentoIdentidad = filter_var(trim($_POST['DocumentoIdentidad']), FILTER_SANITIZE_STRING);
     $CorreoElectronico = filter_var(trim($_POST['CorreoElectronico']), FILTER_VALIDATE_EMAIL);
     $FechaContratacion = $_POST['FechaContratacion'];
-    $FechaRetiro = isset($_POST['FechaRetiro']) ? $_POST['FechaRetiro'] : null;
+    $FechaRetiro = !empty($_POST['FechaRetiro']) ? $_POST['FechaRetiro'] : null;
     $DepartamentoID = filter_var($_POST['departamento'], FILTER_SANITIZE_NUMBER_INT);
 
     if (!$CorreoElectronico) {
@@ -62,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param("sssssssssss", $nombre, $apellido, $nombreUsuario, $contrasena, $rol, $TipoDocumentoID, $DocumentoIdentidad, $CorreoElectronico, $FechaContratacion, $FechaRetiro, $DepartamentoID);
 
     if ($stmt->execute()) {
-        header("Location: admin.php?success=1");
+        header("Location: crear_usuario.php?success=1");
         exit;
     } else {
         echo "Error al agregar nuevo usuario: " . $stmt->error;
@@ -72,7 +71,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $conn->close();
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="es">
@@ -86,13 +84,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="container">
         <h3 class="mt-4">Crear Nuevo Usuario</h3>
-        <?php
-        if (isset($_GET['success']) && $_GET['success'] == 1) {
-            echo '<div class="alert alert-success">Usuario creado exitosamente.</div>';
-        }
-        ?>
-        <form action="crear_usuario.php" method="post">
 
+        <form action="crear_usuario.php" method="post">
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre:</label>
                 <input type="text" id="nombre" name="nombre" class="form-control" required>
@@ -164,10 +157,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <button type="submit" class="btn btn-primary">Crear Usuario</button>
         </form>
+
         <a href="admin.php" class="mt-3 btn btn-secondary">Volver a la lista de usuarios</a>
+
+        <!-- Modal -->
+        <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="successModalLabel">Éxito</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Usuario creado satisfactoriamente.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="acceptButton">Aceptar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Bootstrap JS (optional) -->
+    <!-- Bootstrap JS (necessary for modal) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Mostrar el modal si el usuario fue creado con éxito
+        <?php if (isset($_GET['success']) && $_GET['success'] == 1): ?>
+            var successModal = new bootstrap.Modal(document.getElementById('successModal'));
+            successModal.show();
+
+            // Redirigir a admin.php cuando se cierre el modal al hacer clic en "Aceptar"
+            document.getElementById('acceptButton').addEventListener('click', function () {
+                window.location.href = 'admin.php';
+            });
+        <?php endif; ?>
+    </script>
 </body>
 </html>
