@@ -1,11 +1,11 @@
 <?php
 session_start();
 
-// Establece la conexión a la base de datos
-$servername = "bkqu3uk3ewxyehltqf2t-mysql.services.clever-cloud.com";
-$username = "uwwounruhaizndvh";
-$password = "91JGBP3BP37TC6be2NIi";
-$dbname = "bkqu3uk3ewxyehltqf2t";
+// Datos de conexión a la base de datos
+$servername = "bjgxtiqfs78pgiy7qzux-mysql.services.clever-cloud.com";
+$username = "udb0mb339gpdtxkh";
+$password = "0PRRJnHNJEdZdU9pCHYR";
+$dbname = "bjgxtiqfs78pgiy7qzux";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
