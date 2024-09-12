@@ -11,79 +11,77 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 
 // Verifica si hay errores en la conexión
 if ($conn->connect_error) {
-    die("Error de conexión: " . $conn->connect_error);
+    echo json_encode(["success" => false, "message" => "Error de conexión: " . $conn->connect_error]);
+    exit();
 }
 
+// Verifica que sea una solicitud POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-
-    // Consulta la base de datos para verificar las credenciales del usuario
-    $stmt = $conn->prepare("SELECT ID, Contrasena, Rol FROM usuarios_empleados WHERE NombreUsuario = ?");
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $stmt->store_result();
-
-    if ($stmt->num_rows > 0) {
-        $stmt->bind_result($user_id, $stored_password, $role);
-        $stmt->fetch();
-
-        // Verifica si la contraseña ingresada coincide con la contraseña almacenada en la base de datos
-        if (password_verify($password, $stored_password)) {
-            // Las credenciales son válidas, inicio de sesión exitoso
-            $_SESSION['user_id'] = $user_id;
-            $_SESSION['username'] = $username;
-            $_SESSION['role'] = $role;
-
-            // Redirige según el rol del usuario
-            if ($role === 'administrador') {
-                header('Location: ../admin/admin.php'); // Redirige a la página de administración para administradores
-            } elseif ($role === 'empleado') {
-                header('Location: ../empleado/empleados.php'); // Redirige a la página de perfil de empleado
-            } elseif ($role === 'recursos_humanos') {
-                header('Location: ../recursos_humanos/recurso_humano.php'); // Redirige a la página de recursos humanos
-            } else {
-                // Agrega lógica adicional para otros roles si es necesario
-                header('Location: otra_pagina.php');
-            }
-
-            exit;
-        } else {
-            // Contraseña incorrecta, muestra un mensaje de error
-            $error = "Contraseña incorrecta. Por favor, verifica tus credenciales.";
-        }
+    // Verifica si se están enviando datos en formato JSON o x-www-form-urlencoded
+    $input = file_get_contents('php://input');
+    
+    // Si es JSON, decodifícalo
+    if (strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
+        $data = json_decode($input, true);
     } else {
-        // Nombre de usuario no encontrado, muestra un mensaje de error
-        $error = "Usuario no encontrado. Por favor, verifica tus credenciales.";
+        parse_str($input, $data);
     }
+    
+    // Verifica si se obtuvieron los datos necesarios
+    if (isset($data['username']) && isset($data['password'])) {
+        $username = trim($data['username']);
+        $password = trim($data['password']);
+        
+        // Verifica que los campos no estén vacíos
+        if (empty($username) || empty($password)) {
+            echo json_encode(["success" => false, "message" => "Nombre de usuario o contraseña no proporcionados."]);
+            exit();
+        }
 
-    // Cierre de la conexión a la base de datos
-    $stmt->close();
+        // Consulta la base de datos para verificar las credenciales del usuario
+        $stmt = $conn->prepare("SELECT ID, Contrasena, Rol FROM usuarios_empleados WHERE NombreUsuario = ?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows > 0) {
+            $stmt->bind_result($user_id, $stored_password, $role);
+            $stmt->fetch();
+
+            // Verifica si la contraseña ingresada coincide con la contraseña encriptada
+            if (password_verify($password, $stored_password)) {
+                // Inicio de sesión exitoso, se configura la sesión
+                session_regenerate_id(true); // Regenera el ID de sesión
+                $_SESSION['user_id'] = $user_id;
+                $_SESSION['username'] = $username;
+                $_SESSION['role'] = $role;
+
+                // Respuesta con éxito y redirección
+                echo json_encode([
+                    "success" => true,
+                    "message" => "Inicio de sesión exitoso",
+                    "role" => $role
+                ]);
+            } else {
+                // Contraseña incorrecta
+                echo json_encode(["success" => false, "message" => "Nombre de usuario o contraseña incorrectos."]);
+            }
+        } else {
+            // Nombre de usuario no encontrado
+            echo json_encode(["success" => false, "message" => "Nombre de usuario o contraseña incorrectos."]);
+        }
+        $stmt->close();
+    } else {
+        // Datos necesarios no proporcionados
+        echo json_encode(["success" => false, "message" => "Nombre de usuario o contraseña no proporcionados."]);
+    }
 }
-
-// Cierra la conexión a la base de datos
+//link prueba api 
+// http://localhost/Proyecto_Final_V3/paz_y_salvo2/vistas/login/login.php
+/*{
+    "username": "p1",
+    "password": "123"
+}
+    */
 $conn->close();
 ?>
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error de inicio de sesión</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="container">
-        <?php if (isset($_SESSION['username'])) : ?>
-            <h2 class="welcome-text">Bienvenido, <?php echo htmlspecialchars($_SESSION['username']); ?>!</h2>
-        <?php else : ?>
-            <h2 class="error-text">Error de inicio de sesión</h2>
-            <?php if (isset($error)) : ?>
-                <p class="error-message"><?php echo $error; ?></p>
-            <?php endif; ?>
-            <a href="../../index.php" class="login-link">Volver al inicio de sesión</a>
-        <?php endif; ?>
-    </div>
-</body>
-</html>
