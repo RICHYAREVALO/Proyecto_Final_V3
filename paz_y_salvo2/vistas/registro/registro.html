@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -71,12 +70,43 @@
 
             return true;
         }
+
+        function enviarFormulario(event) {
+            event.preventDefault();
+
+            if (!validarFormulario()) {
+                return;
+            }
+
+            const formData = new FormData(document.querySelector('form'));
+            const data = Object.fromEntries(formData.entries());
+
+            fetch('api/registro.php', {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.error) {
+                    alert(result.error);
+                } else {
+                    alert(result.success);
+                    window.location.href = 'registro_confirmado.php';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al registrar el usuario.');
+            });
+        }
     </script>
 </head>
-
 <body>
     <h2>Registro de Usuario</h2>
-    <form action="registro.php" method="post" enctype="multipart/form-data" onsubmit="return validarFormulario()">
+    <form onsubmit="enviarFormulario(event)">
         <div class="form-group">
             <label for="nombre">Nombre:</label><br>
             <input type="text" id="nombre" name="nombre" required>
@@ -139,5 +169,4 @@
         <input type="submit" value="Registrar">
     </form>
 </body>
-
 </html>
