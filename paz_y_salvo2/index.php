@@ -11,8 +11,8 @@
 </head>
 <body class="custom-background">
     <div class="container-fluid d-flex align-items-center justify-content-center min-vh-100">
-        <div class="form-container position-relative"> <!-- Añadir position-relative para el borde animado -->
-            <!-- Añadir la luz animada -->
+        <div class="form-container position-relative">
+            <!-- Luz animada -->
             <div class="border-glow"></div>
 
             <!-- Título del formulario -->
@@ -20,6 +20,11 @@
             
             <!-- Imagen de fondo -->
             <img src="imagen/beyonder.jpeg" alt="Imagen de fondo" class="img-fluid rounded mb-4 custom-img">
+
+            <!-- Mensaje de bienvenida -->
+            <div id="welcome-message" class="alert alert-success d-none text-center mb-4 welcome-message">
+                <strong>Bienvenid@ a Paz y Salvo Beyonder</strong>
+            </div>
 
             <!-- Div para mostrar mensajes de error -->
             <div id="error-message" class="alert alert-danger d-none"></div>
@@ -47,9 +52,9 @@
                     <input type="password" id="password" name="password" class="form-control" required>
                 </div>
                 <!-- Botón para iniciar sesión -->
-                 <div class="text-center mb-4"></div>
-                <button type="submit" id="submit-btn" class="btn">Iniciar sesión</button>
-                
+                <div class="text-center mb-4">
+                    <button type="submit" id="submit-btn" class="btn">Iniciar sesión</button>
+                </div>
 
                 <!-- Indicador de carga mientras se procesa la solicitud -->
                 <div id="spinner" class="spinner-border text-primary d-none" role="status">
@@ -72,54 +77,71 @@
 
     <!-- Script de manejo del formulario -->
     <script>
-        document.getElementById('login-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // Evita la recarga de la página
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+        document.addEventListener('DOMContentLoaded', function () {
+            // Mostrar el mensaje de bienvenida
+            const welcomeMessage = document.getElementById('welcome-message');
+            welcomeMessage.classList.remove('d-none');
+            setTimeout(() => {
+                welcomeMessage.classList.add('d-none');
+            }, 8000); // Oculta el mensaje después de 8 segundos
 
-            // Deshabilitar el botón y mostrar spinner
-            document.getElementById('submit-btn').disabled = true;
-            document.getElementById('spinner').classList.remove('d-none');
+            document.getElementById('login-form').addEventListener('submit', function(event) {
+                event.preventDefault(); // Evita la recarga de la página
+                
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
 
-            // Envío de la solicitud
-            fetch('vistas/login/login.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: new URLSearchParams({
-                    username: username,
-                    password: password
+                // Deshabilitar el botón y mostrar spinner
+                document.getElementById('submit-btn').disabled = true;
+                document.getElementById('spinner').classList.remove('d-none');
+
+                // Envío de la solicitud
+                fetch('vistas/login/login.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        username: username,
+                        password: password
+                    })
                 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Rehabilitar botón y ocultar spinner
-                document.getElementById('submit-btn').disabled = false;
-                document.getElementById('spinner').classList.add('d-none');
+                .then(response => response.json())
+                .then(data => {
+                    // Rehabilitar botón y ocultar spinner
+                    document.getElementById('submit-btn').disabled = false;
+                    document.getElementById('spinner').classList.add('d-none');
 
-                // Manejo de la respuesta
-                if (data.success) {
-                    // Redirección según el rol del usuario
-                    if (data.role === 'administrador') {
-                        window.location.href = "vistas/admin/admin.php";
-                    } else if (data.role === 'empleado') {
-                        window.location.href = "vistas/empleado/empleados.php";
-                    } else if (data.role === 'recursos_humanos') {
-                        window.location.href = "vistas/recursos_humanos/recurso_humano.php";
+                    // Manejo de la respuesta
+                    if (data.success) {
+                        // Redirección según el rol del usuario
+                        switch (data.role) {
+                            case 'administrador':
+                                window.location.href = "vistas/admin/admin.php";
+                                break;
+                            case 'empleado':
+                                window.location.href = "vistas/empleado/empleados.php";
+                                break;
+                            case 'recursos_humanos':
+                                window.location.href = "vistas/recursos_humanos/recurso_humano.php";
+                                break;
+                            default:
+                                throw new Error('Rol de usuario desconocido.');
+                        }
+                    } else {
+                        // Mostrar mensaje de error
+                        const errorMessage = document.getElementById('error-message');
+                        errorMessage.classList.remove('d-none');
+                        errorMessage.textContent = data.message;
                     }
-                } else {
-                    // Mostrar mensaje de error
-                    document.getElementById('error-message').classList.remove('d-none');
-                    document.getElementById('error-message').textContent = data.message;
-                }
-            })
-            .catch(error => {
-                // Manejo de errores
-                console.error('Error:', error);
-                document.getElementById('error-message').classList.remove('d-none');
-                document.getElementById('error-message').textContent = "Ocurrió un error al intentar iniciar sesión.";
+                })
+                .catch(error => {
+                    // Manejo de errores
+                    console.error('Error:', error);
+                    const errorMessage = document.getElementById('error-message');
+                    errorMessage.classList.remove('d-none');
+                    errorMessage.textContent = "Ocurrió un error al intentar iniciar sesión.";
+                });
             });
         });
     </script>

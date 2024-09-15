@@ -156,3 +156,32 @@ input[type="text"]:focus, input[type="password"]:focus {
     height: auto;
     margin-right: 10px;
 }
+
+/* Estilos del mensaje de bienvenida */
+.welcome-message {
+    background-color: #d4edda; /* Fondo verde claro */
+    color: #152857; /* Color de texto verde oscuro */
+    border: 1px solid #c3e6cb; /* Borde verde claro */
+    border-radius: 8px; /* Bordes redondeados */
+    padding: 1rem; /* Espaciado interno */
+    font-size: 1.25rem; /* Tamaño de fuente más grande */
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada */
+    animation: bounceIn 1s ease-out; /* Animación de entrada */
+}
+
+/* Animación de entrada para el mensaje de bienvenida */
+@keyframes bounceIn {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
