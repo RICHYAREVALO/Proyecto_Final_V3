@@ -4,63 +4,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar sesión</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Hoja de estilos personalizada -->
     <link rel="stylesheet" href="vistas/login/styles.css">
 </head>
-<body>
-    <br> <br> <br> <br> <br> <br>
-    <div class="container-fluid bg-dark text-white py-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6 mx-auto">
-                    <h2 class="text-center mb-4">Iniciar sesión</h2>
-                    <img src="imagen/beyonder.jpeg" alt="Imagen de fondo" class="img-fluid rounded mb-4 custom-img">
+<body class="custom-background">
+    <div class="container-fluid d-flex align-items-center justify-content-center min-vh-100">
+        <div class="form-container position-relative"> <!-- Añadir position-relative para el borde animado -->
+            <!-- Añadir la luz animada -->
+            <div class="border-glow"></div>
 
-                    <!-- Div para mostrar mensajes de error o éxito -->
-                    <div id="error-message" class="alert alert-danger d-none"></div>
-                    
-                    <form id="login-form" method="post" autocomplete="off">
-                        <div class="mb-3">
-                            <label for="username" class="form-label">
-                                <div class="input-group">
-                                    <img src="imagen/iconos/userlogin.png" alt="Icono de usuario" width="20">
-                                    <span class="input-text">Usuario</span>
-                                </div>
-                            </label>
-                            <input type="text" id="username" name="username" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">
-                                <div class="input-group">
-                                    <img src="imagen/iconos/contraseñaicono.png" alt="Icono de contraseña" width="20">
-                                    <span class="input-text">Contraseña</span>
-                                </div>
-                            </label>
-                            <input type="password" id="password" name="password" class="form-control" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Iniciar sesión</button>
-                    </form>
+            <!-- Título del formulario -->
+            <h2 class="text-center mb-4">Iniciar sesión</h2>
+            
+            <!-- Imagen de fondo -->
+            <img src="imagen/beyonder.jpeg" alt="Imagen de fondo" class="img-fluid rounded mb-4 custom-img">
 
-                    <div class="d-flex justify-content-between mt-3">
-                        <p class="mb-0"><a href="vistas/registro/registro.html" class="text-white">¿No tienes una cuenta? Regístrate aquí</a>.</p>  
-                        <p class="mb-0"><a href="vistas/autenticacion/forgot_password.php" class="text-white">Olvidé mi contraseña</a></p>
-                    </div>
+            <!-- Div para mostrar mensajes de error -->
+            <div id="error-message" class="alert alert-danger d-none"></div>
+            
+            <!-- Formulario de inicio de sesión -->
+            <form id="login-form" method="post" autocomplete="off">
+                <!-- Campo de usuario -->
+                <div class="mb-3">
+                    <label for="username" class="form-label">
+                        <div class="input-group">
+                            <img src="imagen/iconos/userlogin.png" alt="Icono de usuario" class="icono">
+                            <span class="input-text">Usuario</span>
+                        </div>
+                    </label>
+                    <input type="text" id="username" name="username" class="form-control" required>
                 </div>
+                <!-- Campo de contraseña -->
+                <div class="mb-3">
+                    <label for="password" class="form-label">
+                        <div class="input-group">
+                            <img src="imagen/iconos/contraseñaicono.png" alt="Icono de contraseña" class="icono">
+                            <span class="input-text">Contraseña</span>
+                        </div>
+                    </label>
+                    <input type="password" id="password" name="password" class="form-control" required>
+                </div>
+                <!-- Botón para iniciar sesión -->
+                 <div class="text-center mb-4"></div>
+                <button type="submit" id="submit-btn" class="btn">Iniciar sesión</button>
+                
+
+                <!-- Indicador de carga mientras se procesa la solicitud -->
+                <div id="spinner" class="spinner-border text-primary d-none" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+            </form>
+
+            <!-- Enlaces adicionales -->
+            <div class="mt-3 text-center">
+                <p class="mb-1"><a href="vistas/registro/registro.html" class="text-blue">¿No tienes una cuenta? Regístrate aquí</a></p>
+                <p class="mb-0"><a href="vistas/autenticacion/forgot_password.php" class="text-blue">Olvidé mi contraseña</a></p>
             </div>
         </div>
     </div>
 
+    <!-- jQuery, Popper y Bootstrap JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- Script de manejo del formulario -->
     <script>
         document.getElementById('login-form').addEventListener('submit', function(event) {
-            event.preventDefault();
+            event.preventDefault(); // Evita la recarga de la página
             
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
+            // Deshabilitar el botón y mostrar spinner
+            document.getElementById('submit-btn').disabled = true;
+            document.getElementById('spinner').classList.remove('d-none');
+
+            // Envío de la solicitud
             fetch('vistas/login/login.php', {
                 method: 'POST',
                 headers: {
@@ -73,7 +95,13 @@
             })
             .then(response => response.json())
             .then(data => {
+                // Rehabilitar botón y ocultar spinner
+                document.getElementById('submit-btn').disabled = false;
+                document.getElementById('spinner').classList.add('d-none');
+
+                // Manejo de la respuesta
                 if (data.success) {
+                    // Redirección según el rol del usuario
                     if (data.role === 'administrador') {
                         window.location.href = "vistas/admin/admin.php";
                     } else if (data.role === 'empleado') {
@@ -82,12 +110,16 @@
                         window.location.href = "vistas/recursos_humanos/recurso_humano.php";
                     }
                 } else {
+                    // Mostrar mensaje de error
                     document.getElementById('error-message').classList.remove('d-none');
                     document.getElementById('error-message').textContent = data.message;
                 }
             })
             .catch(error => {
+                // Manejo de errores
                 console.error('Error:', error);
+                document.getElementById('error-message').classList.remove('d-none');
+                document.getElementById('error-message').textContent = "Ocurrió un error al intentar iniciar sesión.";
             });
         });
     </script>
