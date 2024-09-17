@@ -24,6 +24,47 @@ if ($conn->connect_error) {
     exit;
 }
 
+// Obtener los datos del formulario
+$nombre = $_POST['nombre'];
+$apellido = $_POST['apellido'];
+$nombreUsuario = $_POST['nombre_usuario'];
+$contrasena = password_hash($_POST['contrasena'], PASSWORD_DEFAULT);
+$tipoDocumento = $_POST['tipo_documento'];
+$documentoIdentidad = $_POST['documento_identidad'];
+$correoElectronico = $_POST['correo_electronico'];
+$departamento = $_POST['departamento'];
+$fechaContratacion = $_POST['fecha_contratacion'];
+
+// Función para validar unicidad
+function validarUnicidad($conn, $campo, $valor) {
+    $sql = "SELECT COUNT(*) FROM usuarios_empleados WHERE $campo = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $valor);
+    $stmt->execute();
+    $stmt->bind_result($count);
+    $stmt->fetch();
+    $stmt->close();
+    return $count == 0;
+}
+
+// Verificar unicidad del nombre de usuario
+if (!validarUnicidad($conn, 'NombreUsuario', $nombreUsuario)) {
+    echo json_encode(['error' => 'El nombre de usuario ya está en uso.']);
+    exit;
+}
+
+// Verificar unicidad del correo electrónico
+if (!validarUnicidad($conn, 'CorreoElectronico', $correoElectronico)) {
+    echo json_encode(['error' => 'El correo electrónico ya está en uso.']);
+    exit;
+}
+
+// Verificar unicidad del documento de identidad
+if (!validarUnicidad($conn, 'DocumentoIdentidad', $documentoIdentidad)) {
+    echo json_encode(['error' => 'El documento de identidad ya está en uso.']);
+    exit;
+}
+
 // Comprobar si la carpeta de uploads existe y es escribible
 $uploadDir = '../../empleado/uploads/';
 if (!is_dir($uploadDir)) {
@@ -48,17 +89,6 @@ if (isset($_FILES['fotoPerfil'])) {
         exit;
     }
 }
-
-// Procesar el resto de los datos
-$nombre = $_POST['nombre'];
-$apellido = $_POST['apellido'];
-$nombreUsuario = $_POST['nombre_usuario'];
-$contrasena = password_hash($_POST['contrasena'], PASSWORD_DEFAULT);
-$tipoDocumento = $_POST['tipo_documento'];
-$documentoIdentidad = $_POST['documento_identidad'];
-$correoElectronico = $_POST['correo_electronico'];
-$departamento = $_POST['departamento'];
-$fechaContratacion = $_POST['fecha_contratacion'];
 
 // Preparar y ejecutar la consulta
 $sql = "INSERT INTO usuarios_empleados (Nombre, Apellido, NombreUsuario, Contrasena, Rol, TipoDocumento_ID, DocumentoIdentidad, CorreoElectronico, Departamento_ID, FechaContratacion, FotoPerfil) 

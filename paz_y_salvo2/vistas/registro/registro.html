@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Usuario</title>
     <link rel="stylesheet" href="stylesregistro.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <script>
         function validarFormulario() {
             var nombre = document.getElementById("nombre").value.trim();
@@ -12,60 +13,48 @@
             var nombreUsuario = document.getElementById("nombre_usuario").value.trim();
             var documentoIdentidad = document.getElementById("documento_identidad").value.trim();
             var correoElectronico = document.getElementById("correo_electronico").value.trim();
-
-            var errorNombre = document.getElementById("error-nombre");
-            var errorApellido = document.getElementById("error-apellido");
-            var errorNombreUsuario = document.getElementById("error-nombre_usuario");
-            var errorDocumentoIdentidad = document.getElementById("error-documento_identidad");
-            var errorCorreoElectronico = document.getElementById("error-correo_electronico");
+            var contrasena = document.getElementById("contrasena").value;
+            var confirmarContrasena = document.getElementById("confirmar_contraseña").value;
 
             var regexLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
             var regexDocumento = /^[0-9]+$/;
             var regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+            var errorMensaje = "";
+
             // Validación de nombre
             if (!regexLetras.test(nombre)) {
-                errorNombre.textContent = "El nombre solo puede contener letras y espacios.";
-                errorNombre.style.display = "inline";
-                return false;
-            } else {
-                errorNombre.style.display = "none";
+                errorMensaje += "El nombre solo puede contener letras y espacios.<br>";
             }
 
             // Validación de apellido
             if (!regexLetras.test(apellido)) {
-                errorApellido.textContent = "El apellido solo puede contener letras y espacios.";
-                errorApellido.style.display = "inline";
-                return false;
-            } else {
-                errorApellido.style.display = "none";
+                errorMensaje += "El apellido solo puede contener letras y espacios.<br>";
             }
 
             // Validación de nombre de usuario
             if (nombreUsuario.length < 3) {
-                errorNombreUsuario.textContent = "El nombre de usuario debe tener al menos 3 caracteres.";
-                errorNombreUsuario.style.display = "inline";
-                return false;
-            } else {
-                errorNombreUsuario.style.display = "none";
+                errorMensaje += "El nombre de usuario debe tener al menos 3 caracteres.<br>";
             }
 
             // Validación de documento de identidad
             if (!regexDocumento.test(documentoIdentidad)) {
-                errorDocumentoIdentidad.textContent = "El documento de identidad solo puede contener números.";
-                errorDocumentoIdentidad.style.display = "inline";
-                return false;
-            } else {
-                errorDocumentoIdentidad.style.display = "none";
+                errorMensaje += "El documento de identidad solo puede contener números.<br>";
             }
 
             // Validación de correo electrónico
             if (!regexCorreo.test(correoElectronico)) {
-                errorCorreoElectronico.textContent = "Correo electrónico inválido.";
-                errorCorreoElectronico.style.display = "inline";
+                errorMensaje += "Correo electrónico inválido.<br>";
+            }
+
+            // Validación de contraseñas
+            if (contrasena !== confirmarContrasena) {
+                errorMensaje += "La contraseña y la confirmación de la contraseña no coinciden.<br>";
+            }
+
+            if (errorMensaje) {
+                mostrarModal("Error", errorMensaje, "danger");
                 return false;
-            } else {
-                errorCorreoElectronico.style.display = "none";
             }
 
             return true;
@@ -87,16 +76,32 @@
             .then(response => response.json())
             .then(result => {
                 if (result.error) {
-                    alert(result.error);
+                    mostrarModal("Error", result.error, "danger");
                 } else {
-                    alert(result.success);
-                    window.location.href = 'registro_confirmado.php';
+                    mostrarModal("Éxito", result.success, "success");
+                    // Redirigir después de cerrar el modal
+                    document.getElementById('btnCerrar').onclick = function() {
+                        window.location.href = '../../index.php';
+                    };
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error al registrar el usuario.');
+                mostrarModal("Error", 'Error al registrar el usuario.', "danger");
             });
+        }
+
+        function mostrarModal(titulo, mensaje, tipo) {
+            const modalTitulo = document.getElementById('modal-titulo');
+            const modalCuerpo = document.getElementById('modal-cuerpo');
+            const modalHeader = document.querySelector('.modal-header');
+            
+            modalTitulo.textContent = titulo;
+            modalCuerpo.innerHTML = mensaje;
+            modalHeader.className = `modal-header bg-${tipo} text-white`;
+            
+            const modal = new bootstrap.Modal(document.getElementById('messageModal'));
+            modal.show();
         }
     </script>
 </head>
@@ -106,17 +111,14 @@
         <div class="form-group">
             <label for="nombre">Nombre:</label><br>
             <input type="text" id="nombre" name="nombre" required>
-            <span id="error-nombre" style="color: red; display: none;"></span>
         </div>
         <div class="form-group">
             <label for="apellido">Apellido:</label><br>
             <input type="text" id="apellido" name="apellido" required>
-            <span id="error-apellido" style="color: red; display: none;"></span>
         </div>
         <div class="form-group">
             <label for="nombre_usuario">Nombre de Usuario:</label><br>
             <input type="text" id="nombre_usuario" name="nombre_usuario" required>
-            <span id="error-nombre_usuario" style="color: red; display: none;"></span>
         </div>
         <div class="form-group">
             <label for="contrasena">Contraseña:</label><br>
@@ -137,12 +139,10 @@
         <div class="form-group">
             <label for="documento_identidad">Documento de Identidad:</label><br>
             <input type="text" id="documento_identidad" name="documento_identidad" required>
-            <span id="error-documento_identidad" style="color: red; display: none;"></span>
         </div>
         <div class="form-group">
             <label for="correo_electronico">Correo Electrónico:</label><br>
             <input type="email" id="correo_electronico" name="correo_electronico" required>
-            <span id="error-correo_electronico" style="color: red; display: none;"></span>
         </div>
         <div class="form-group">
             <label for="departamento">Departamento:</label><br>
@@ -164,5 +164,26 @@
         </div>
         <input type="submit" value="Registrar">
     </form>
+
+    <!-- Modal -->
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modal-titulo">Título del Modal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modal-cuerpo">
+                    <!-- Mensaje del Modal -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCerrar" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
