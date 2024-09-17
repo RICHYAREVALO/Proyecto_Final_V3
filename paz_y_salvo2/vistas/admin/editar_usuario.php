@@ -71,39 +71,75 @@ $conn->close();
 ?>
 
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Usuario</title>
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Add custom styles if needed */
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .user-icon, .logout-icon {
+            margin-left: 10px;
+            font-size: 1.2rem;
+        }
+        .main-nav {
+            background-color: #f8f9fa;
+            padding: 0.5rem;
+        }
+        .main-nav a.active {
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">Editar Usuario</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link" href="admin.php">Lista de Usuarios</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="../login/logout.php">Cerrar Sesión</a>
-                        </li>
-                    </ul>
+    <header>
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center py-2">
+                <div class="logo">Sistema Usuarios</div>
+                <link rel="stylesheet" href="admin.css">
+                <div class="user-info">
+                    Bogota, <?php echo date('d \d\e F \d\e Y'); ?> | <?php echo htmlspecialchars($username, ENT_QUOTES, 'UTF-8'); ?>
+                    <span class="user-icon" aria-label="User Icon">👤</span>
+                    <a href="../login/logout.php" class="logout-icon" aria-label="Logout">⏻</a>
                 </div>
             </div>
+        </div>
+    </header>
+
+
+    <div class="container mt-3">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#">Editar Usuario</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="admin.php">Lista de Usuarios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../login/logout.php">Cerrar Sesión</a>
+                    </li>
+                </ul>
+            </div>
         </nav>
+
         <h2 class="mt-4">Bienvenido, <?php echo htmlspecialchars($username); ?>!</h2>
         <h3 class="mt-3">Editar Usuario</h3>
         <form action="guardar_edicion_usuario.php" method="POST">
             <input type="hidden" name="id" value="<?php echo htmlspecialchars($usuario['ID']); ?>">
-            
+
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre:</label>
                 <input type="text" id="nombre" name="nombre" class="form-control" value="<?php echo htmlspecialchars($usuario['Nombre']); ?>" required>
@@ -136,9 +172,12 @@ $conn->close();
             <div class="mb-3">
                 <label for="tipo" class="form-label">Tipo Documento:</label>
                 <select id="tipo" name="tipo" class="form-select" required>
-                    <option value="1" <?php echo ($usuario['TipoDocumento'] === 'Cedula') ? 'selected' : ''; ?>>Cedula</option>
-                    <option value="2" <?php echo ($usuario['TipoDocumento'] === 'Cedula Extranjeria') ? 'selected' : ''; ?>>Cedula Extranjeria</option>
-                    <option value="3" <?php echo ($usuario['TipoDocumento'] === 'Cedula Extranjera') ? 'selected' : ''; ?>>Cedula Extranjera</option>
+                    <?php foreach ($departamentos as $departamento): ?>
+                        <option value="<?php echo htmlspecialchars($departamento['ID']); ?>"
+                            <?php echo ($departamento['ID'] === intval($usuario['TipoDocumento_ID'])) ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($departamento['Nombre']); ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
             </div>
 
@@ -158,10 +197,9 @@ $conn->close();
             </div>
 
             <div class="mb-3">
-    <label for="fechaRetiro" class="form-label">Fecha de Retiro:</label>
-    <input type="date" id="fechaRetiro" name="fechaRetiro" class="form-control" value="<?php echo htmlspecialchars($usuario['FechaRetiro']); ?>">
-</div>
-
+                <label for="fechaRetiro" class="form-label">Fecha de Retiro:</label>
+                <input type="date" id="fechaRetiro" name="fechaRetiro" class="form-control" value="<?php echo htmlspecialchars($usuario['FechaRetiro']); ?>">
+            </div>
 
             <div class="mb-3">
                 <label for="departamento" class="form-label">Departamento:</label>
@@ -179,7 +217,9 @@ $conn->close();
         </form>
     </div>
 
-    <!-- Bootstrap JS (optional) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

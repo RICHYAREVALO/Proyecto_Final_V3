@@ -7,13 +7,13 @@
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Tu archivo de estilos personalizado -->
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="../../vistas/login/styles.css">
+    <link rel="stylesheet" href="olvido_cont.css">
+    <link rel="stylesheet" href="../login/styles.css">
 </head>
 <body>
-    <div class="container">
-        <h2 class="mt-5">Olvido  Contraseña</h2>
-        <form action="olvido_contraseña.php" method="post" class="mt-3">
+    <div class="container form-container">
+        <h2>Olvido Contraseña</h2>
+        <form action="olvido_contraseña.php" method="post">
             <div class="form-group">
                 <label for="nombre_usuario">Nombre de Usuario:</label>
                 <input type="text" class="form-control" id="nombre_usuario" name="nombre_usuario" required>

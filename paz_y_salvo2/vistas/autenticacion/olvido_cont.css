@@ -1,0 +1,93 @@
+/* olvido_cont.css */
+
+/* Fondo personalizado para el cuerpo de la página */
+body {
+    background-image: url('../../imagen/beyonder333.jpg');
+    background-size: cover;
+    background-position: center;
+    color: #333; /* Color de texto por defecto para mejor legibilidad */
+}
+
+/* Estilos del contenedor del formulario */
+.form-container {
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco semitransparente */
+    border-radius: 12px; /* Bordes redondeados */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Sombra más prominente */
+    padding: 2rem; /* Espaciado interno */
+    margin: 2rem auto; /* Margen superior e inferior de 2rem para centrar el formulario */
+    max-width: 500px; /* Ancho máximo para el contenedor */
+    width: 100%; /* Asegura que el contenedor ocupa el 100% del espacio disponible */
+    position: relative; /* Necesario para la luz animada */
+    opacity: 0; /* Inicialmente invisible */
+    transform: translateY(20px); /* Inicialmente desplazado hacia abajo */
+    animation: slideIn 1s forwards; /* Efecto de deslizamiento al cargar */
+}
+
+/* Animación para el efecto de deslizamiento del formulario */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estilos del título */
+h2 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    font-size: 2.5rem; /* Tamaño del texto aumentado */
+    color: #002fff; /* Color azul más intenso */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Sombra de texto */
+    margin-bottom: 1.5rem; /* Espaciado inferior */
+    text-align: center; /* Centra el texto del título */
+}
+
+/* Estilos del botón de inicio de sesión */
+button {
+    background: linear-gradient(45deg, #002fff, #025bff); /* Gradiente de color */
+    color: #fff;
+    font-size: 1.2rem; /* Tamaño de fuente más grande */
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px; /* Bordes redondeados */
+    padding: 0.75rem 1.5rem; /* Espaciado interno */
+    transition: all 0.3s ease; /* Transición suave para los cambios */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra de caja más pronunciada */
+    text-transform: uppercase; /* Texto en mayúsculas */
+    display: block; /* Necesario para centrar con margin auto */
+    margin: 1rem auto; /* Centra el botón horizontalmente y agrega margen superior e inferior */
+}
+
+/* Efecto al pasar el cursor */
+button:hover {
+    background: linear-gradient(45deg, #ff9800, #ff6f00); /* Gradiente invertido */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); /* Sombra más pronunciada */
+    transform: translateY(-2px); /* Desplaza el botón hacia arriba */
+}
+
+/* Efecto al hacer clic en el botón */
+button:active {
+    background: linear-gradient(45deg, #ff6f00, #ff9800); /* Gradiente invertido */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra más tenue */
+    transform: translateY(1px); /* Efecto de presionar el botón */
+}
+
+/* Estilos para los campos de entrada del formulario */
+.form-control {
+    border-radius: 8px; /* Bordes redondeados */
+    border: 1px solid #ddd; /* Borde gris claro */
+    padding: 0.75rem; /* Espaciado interno */
+    font-size: 1rem; /* Tamaño de fuente */
+    transition: border-color 0.3s ease; /* Transición suave para el borde */
+}
+
+/* Efecto al enfocar los campos de entrada */
+.form-control:focus {
+    border-color: #025bff; /* Color de borde azul al enfocar */
+    outline: none; /* Quita el contorno predeterminado */
+}
