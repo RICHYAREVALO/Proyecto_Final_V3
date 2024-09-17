@@ -6,6 +6,7 @@
     <title>Registro de Usuario</title>
     <link rel="stylesheet" href="stylesregistro.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script>
         function validarFormulario() {
             var nombre = document.getElementById("nombre").value.trim();
@@ -108,61 +109,86 @@
 <body>
     <h2>Registro de Usuario</h2>
     <form onsubmit="enviarFormulario(event)">
-        <div class="form-group">
-            <label for="nombre">Nombre:</label><br>
-            <input type="text" id="nombre" name="nombre" required>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label for="nombre">Nombre:</label>
+                    <i class="icon fas fa-user"></i>
+                    <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Nombre" required>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="apellido">Apellido:</label>
+                    <i class="icon fas fa-user"></i>
+                    <input type="text" id="apellido" name="apellido" class="form-control" placeholder="Apellido" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label for="nombre_usuario">Nombre de Usuario:</label>
+                    <i class="icon fas fa-user-tag"></i>
+                    <input type="text" id="nombre_usuario" name="nombre_usuario" class="form-control" placeholder="Nombre de Usuario" required>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="contrasena">Contraseña:</label>
+                    <i class="icon fas fa-lock"></i>
+                    <input type="password" id="contrasena" name="contrasena" class="form-control" placeholder="Contraseña" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label for="confirmar_contraseña">Confirmar Contraseña:</label>
+                    <i class="icon fas fa-lock"></i>
+                    <input type="password" id="confirmar_contraseña" name="confirmar_contraseña" class="form-control" placeholder="Confirmar Contraseña" required>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="tipo_documento">Tipo de Documento:</label>
+                    <i class="icon fas fa-id-card"></i>
+                    <select id="tipo_documento" name="tipo_documento" class="form-select" required>
+                        <option value="1">NIT</option>
+                        <option value="2">Cédula de Ciudadanía</option>
+                        <option value="3">Cédula de Extranjería</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label for="documento_identidad">Documento de Identidad:</label>
+                    <i class="icon fas fa-id-card"></i>
+                    <input type="text" id="documento_identidad" name="documento_identidad" class="form-control" placeholder="Documento de Identidad" required>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="correo_electronico">Correo Electrónico:</label>
+                    <i class="icon fas fa-envelope"></i>
+                    <input type="email" id="correo_electronico" name="correo_electronico" class="form-control" placeholder="Correo Electrónico" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label for="departamento">Departamento:</label>
+                    <i class="icon fas fa-building"></i>
+                    <select id="departamento" name="departamento" class="form-select" required>
+                        <option value="1">Recursos Humanos</option>
+                        <option value="2">Contabilidad</option>
+                        <option value="3">IT</option>
+                        <option value="4">Ventas</option>
+                        <option value="5">Gerencia</option>
+                    </select>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="fecha_contratacion">Fecha de Contratación:</label>
+                    <i class="icon fas fa-calendar-alt"></i>
+                    <input type="date" id="fecha_contratacion" name="fecha_contratacion" class="form-control" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label for="fotoPerfil">Foto de Perfil:</label>
+                    <i class="icon fas fa-image"></i>
+                    <input type="file" id="fotoPerfil" name="fotoPerfil" class="form-control" accept=".jpg, .jpeg, .png, .gif, .jfif" required>
+                </div>
+            </div>
+            <input type="submit" class="btn btn-primary mt-3" value="Registrar">
         </div>
-        <div class="form-group">
-            <label for="apellido">Apellido:</label><br>
-            <input type="text" id="apellido" name="apellido" required>
-        </div>
-        <div class="form-group">
-            <label for="nombre_usuario">Nombre de Usuario:</label><br>
-            <input type="text" id="nombre_usuario" name="nombre_usuario" required>
-        </div>
-        <div class="form-group">
-            <label for="contrasena">Contraseña:</label><br>
-            <input type="password" id="contrasena" name="contrasena" required>
-        </div>
-        <div class="form-group">
-            <label for="confirmar_contraseña">Confirmar Contraseña:</label><br>
-            <input type="password" id="confirmar_contraseña" name="confirmar_contraseña" required>
-        </div>
-        <div class="form-group">
-            <label for="tipo_documento">Tipo de Documento:</label><br>
-            <select id="tipo_documento" name="tipo_documento" required>
-                <option value="1">NIT</option>
-                <option value="2">Cédula de Ciudadanía</option>
-                <option value="3">Cédula de Extranjería</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="documento_identidad">Documento de Identidad:</label><br>
-            <input type="text" id="documento_identidad" name="documento_identidad" required>
-        </div>
-        <div class="form-group">
-            <label for="correo_electronico">Correo Electrónico:</label><br>
-            <input type="email" id="correo_electronico" name="correo_electronico" required>
-        </div>
-        <div class="form-group">
-            <label for="departamento">Departamento:</label><br>
-            <select id="departamento" name="departamento" required>
-                <option value="1">Recursos Humanos</option>
-                <option value="2">Contabilidad</option>
-                <option value="3">IT</option>
-                <option value="4">Ventas</option>
-                <option value="5">Gerencia</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="fecha_contratacion">Fecha de Contratación:</label><br>
-            <input type="date" id="fecha_contratacion" name="fecha_contratacion" required>
-        </div>
-        <div class="form-group">
-            <label for="fotoPerfil">Foto de Perfil:</label><br>
-            <input type="file" id="fotoPerfil" name="fotoPerfil" accept=".jpg, .jpeg, .png, .gif, .jfif" required>
-        </div>
-        <input type="submit" value="Registrar">
     </form>
 
     <!-- Modal -->

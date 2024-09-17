@@ -9,46 +9,69 @@ body {
 
 h2 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     color: #333;
+    font-size: 2rem;
+    font-weight: bold;
 }
 
 form {
-    max-width: 400px;
+    max-width: 900px; /* Aumenta el ancho máximo del formulario */
     margin: 0 auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: center; /* Para centrar los elementos internos */
+    padding: 30px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: left; /* Alineación del texto a la izquierda */
 }
 
 .form-group {
-    margin-bottom: 15px;
-    text-align: left; /* Alinea el texto a la izquierda */
+    margin-bottom: 20px;
+    position: relative;
 }
 
-form input[type="text"],
-form input[type="password"],
-form input[type="email"],
-form select {
-    width: 90%; /* Ajusta el ancho del input */
-    padding: 10px;
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"],
+.form-group input[type="email"],
+.form-group select {
+    width: calc(100% - 40px); /* Ajusta el ancho del input para dejar espacio para el icono */
+    padding: 10px 15px;
     margin-bottom: 15px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    text-align: center; /* Centra el texto dentro del input */
-    margin: 0 auto; /* Centra los inputs horizontalmente */
+    font-size: 1rem;
+    position: relative;
 }
 
-form select {
+.form-group input[type="text"]::placeholder,
+.form-group input[type="password"]::placeholder,
+.form-group input[type="email"]::placeholder {
+    color: #888;
+}
+
+.form-group select {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 9 12 15 18 9"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 20px;
     -moz-appearance: none;
     -webkit-appearance: none;
     appearance: none;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 9 12 15 18 9"/></svg>');
-    background-repeat: no-repeat;
-    background-position: right 15px center;
-    background-size: 24px;
+}
+
+.form-group .icon {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #333;
 }
 
 form input[type="submit"] {
@@ -59,9 +82,69 @@ form input[type="submit"] {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    font-size: 1.1rem;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.3s;
 }
 
 form input[type="submit"]:hover {
     background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.form-group .icon-user:before {
+    content: '\f007'; /* Icono de usuario */
+    font-family: 'FontAwesome';
+}
+
+.form-group .icon-lock:before {
+    content: '\f023'; /* Icono de candado */
+    font-family: 'FontAwesome';
+}
+
+.form-group .icon-envelope:before {
+    content: '\f0e0'; /* Icono de sobre */
+    font-family: 'FontAwesome';
+}
+
+.form-group .icon-id-card:before {
+    content: '\f2c1'; /* Icono de documento de identidad */
+    font-family: 'FontAwesome';
+}
+
+form input[type="file"] {
+    padding: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: #f8f9fa;
+    cursor: pointer;
+}
+
+/* Estilo adicional para el diseño en cuadrícula */
+.container {
+    margin-top: 30px;
+}
+
+.row {
+    margin-bottom: 20px;
+}
+
+.col-md-6 {
+    display: flex;
+    flex-direction: column;
+}
+
+.col-md-6 .form-group {
+    margin-bottom: 15px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%; /* Ajusta el ancho del input para la cuadrícula */
+}
+
+@media (max-width: 768px) {
+    .form-group {
+        margin-bottom: 10px;
+    }
 }
