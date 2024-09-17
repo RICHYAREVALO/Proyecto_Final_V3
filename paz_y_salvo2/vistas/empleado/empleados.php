@@ -2,7 +2,6 @@
 session_start();
 
 // Variables de conexión a la base de datos
-// Datos de conexión a la base de datos
 $servername = "bjgxtiqfs78pgiy7qzux-mysql.services.clever-cloud.com";
 $username = "udb0mb339gpdtxkh";
 $password = "0PRRJnHNJEdZdU9pCHYR";
@@ -49,6 +48,10 @@ if ($result_obtener_empleado->num_rows > 0) {
     $documentoIdentidadEmpleado = htmlspecialchars($empleado['DocumentoIdentidad']);
     $id_empleado = htmlspecialchars($empleado['ID']);
     $fotoPerfil = htmlspecialchars($empleado['FotoPerfil']);
+
+    // Ruta base de la carpeta de fotos de perfil
+    $baseUrl = 'http://localhost/Proyecto_Final_V3/paz_y_salvo2/vistas/empleado/uploads/';
+    $fotoPerfilUrl = $fotoPerfil ? $baseUrl . basename($fotoPerfil) : $baseUrl . 'default-profile.png';
     ?>
     <!DOCTYPE html>
     <html lang="es">
@@ -57,7 +60,6 @@ if ($result_obtener_empleado->num_rows > 0) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Empleados</title>
         <link rel="stylesheet" href="empleados.css">
-        <!-- Agregar el archivo CSS de Bootstrap -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css">
     </head>
     <body>
@@ -71,26 +73,21 @@ if ($result_obtener_empleado->num_rows > 0) {
             </h2>
             <div class="text-center">
                 <!-- Mostrar la foto de perfil -->
-                <?php if (!empty($fotoPerfil)): ?>
-                    <img src="<?php echo $fotoPerfil; ?>" alt="Foto de Perfil" class="img-thumbnail" style="max-width: 150px;">
-                <?php else: ?>
-                    <img src="../../imagen/iconos/default-profile.png" alt="Foto de Perfil Predeterminada" class="img-thumbnail" style="max-width: 150px;">
-                <?php endif; ?>
+                <img src="<?php echo $fotoPerfilUrl; ?>" alt="Foto de Perfil" class="img-thumbnail" style="max-width: 150px;">
             </div>
-            <div class="table-responsive"> <!-- Agregar clase table-responsive para hacer la tabla responsive -->
+            <div class="table-responsive">
                 <table class="table table-bordered">
                     <tr>
                         <th>Nombre</th>
                         <th>Apellido</th>
                         <th>Documento de Identidad</th>
-                        <th>Acciones</th> <!-- Nueva columna para acciones -->
+                        <th>Acciones</th>
                     </tr>
                     <tr>
                         <td><?php echo $nombreEmpleado; ?></td>
                         <td><?php echo $apellidoEmpleado; ?></td>
                         <td><?php echo $documentoIdentidadEmpleado; ?></td>
                         <td>
-                            <!-- Botón para abrir la ventana emergente del formulario de edición -->
                             <button class="btn btn-primary" onclick="openEditForm('<?php echo $nombreEmpleado; ?>', '<?php echo $apellidoEmpleado; ?>', '<?php echo $documentoIdentidadEmpleado; ?>')">
                                 Editar Datos <img src="../../imagen/iconos/lapiz.png" alt="editar" class="edit-icon">
                             </button>
@@ -108,7 +105,6 @@ if ($result_obtener_empleado->num_rows > 0) {
                 <button type='submit' class="btn btn-info">Consultar Estado del Paz y Salvo</button>
             </form>
             <div class="container">
-                <!-- Agregar un enlace o botón para descargar el PDF -->
                 <a href="../paz_y_salvo/generar_pdf.php" target="_blank" class="btn btn-primary">
                     Descargar Paz y Salvo PDF
                     <img src="../../imagen/iconos/pdf.png" alt="PDF" class="edit-icon">
@@ -117,11 +113,9 @@ if ($result_obtener_empleado->num_rows > 0) {
             <br><a href='../login/logout.php' class="btn btn-danger">Cerrar Sesión</a>
         </div>
 
-        <!-- Ventana emergente del formulario de edición -->
         <div id="editFormModal" class="modal">
             <div class="modal-content">
                 <span class="close" onclick="closeEditForm()">&times;</span>
-                <!-- Incluir aquí el formulario de edición -->
                 <form id="editForm" action="actualizar_datos_empleado.php" method="post">
                     <label for="nuevoNombre">Nuevo Nombre:</label>
                     <input type="text" id="nuevoNombre" name="nuevoNombre" required><br><br>
@@ -135,7 +129,6 @@ if ($result_obtener_empleado->num_rows > 0) {
         </div>
 
         <script>
-            // Función para abrir la ventana emergente del formulario de edición
             function openEditForm(nombre, apellido, documentoIdentidad) {
                 document.getElementById('editFormModal').style.display = 'block';
                 document.getElementById('nuevoNombre').value = nombre;
@@ -143,19 +136,16 @@ if ($result_obtener_empleado->num_rows > 0) {
                 document.getElementById('nuevoDocumento').value = documentoIdentidad;
             }
 
-            // Función para cerrar la ventana emergente del formulario de edición
             function closeEditForm() {
                 document.getElementById('editFormModal').style.display = 'none';
             }
         </script>
-        <!-- Agregar los archivos JS de Bootstrap -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     </body>
     </html>
     <?php
 } else {
-    // Manejar el caso si no se encuentra el empleado
     echo "Error: No se encontraron datos del empleado asociado al usuario.";
 }
 
