@@ -7,15 +7,15 @@ $username = "udb0mb339gpdtxkh";
 $password = "0PRRJnHNJEdZdU9pCHYR";
 $dbname = "bjgxtiqfs78pgiy7qzux";
 
-// Create connection
+// Crear conexión
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check connection
+// Verificar conexión
 if ($conn->connect_error) {
     die("Error de conexión: " . $conn->connect_error);
 }
 
-// Check if user is logged in
+// Verificar si el usuario ha iniciado sesión
 if (!isset($_SESSION['username'])) {
     header('Location: ../login/login.php');
     exit;
@@ -23,11 +23,11 @@ if (!isset($_SESSION['username'])) {
 
 $username = $_SESSION['username'];
 
-// Validate 'id' parameter
+// Validar el parámetro 'id'
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id = $_GET['id'];
 
-    // Prepare and execute the query
+    // Preparar y ejecutar la consulta
     $stmt = $conn->prepare("SELECT u.*, t.TipoDocumento FROM usuarios_empleados u
                             LEFT JOIN tipodocumento t ON u.TipoDocumento_ID = t.ID
                             WHERE u.ID = ?");
@@ -35,7 +35,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $stmt->execute();
     $result = $stmt->get_result();
 
-    // Fetch the user data
+    // Obtener los datos del usuario
     if ($result) {
         $usuario = $result->fetch_assoc();
 
@@ -65,6 +65,19 @@ if ($result->num_rows > 0) {
     }
 } else {
     echo "No se encontraron departamentos.";
+}
+
+// Obtener los tipos de documento
+$tipodocumentos = [];
+$tipodocumentoQuery = "SELECT ID, TipoDocumento FROM tipodocumento";
+$result = $conn->query($tipodocumentoQuery);
+
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $tipodocumentos[] = $row;
+    }
+} else {
+    echo "No se encontraron tipos de documento.";
 }
 
 $conn->close();
@@ -116,7 +129,6 @@ $conn->close();
         </div>
     </header>
 
-
     <div class="container mt-3">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <a class="navbar-brand" href="#">Editar Usuario</a>
@@ -137,7 +149,7 @@ $conn->close();
 
         <h2 class="mt-4">Bienvenido, <?php echo htmlspecialchars($username); ?>!</h2>
         <h3 class="mt-3">Editar Usuario</h3>
-        <form action="guardar_edicion_usuario.php" method="POST">
+        <form id="editUserForm" action="guardar_edicion_usuario.php" method="POST">
             <input type="hidden" name="id" value="<?php echo htmlspecialchars($usuario['ID']); ?>">
 
             <div class="mb-3">
@@ -168,14 +180,13 @@ $conn->close();
                     <option value="recursos_humanos" <?php echo ($usuario['Rol'] === 'recursos_humanos') ? 'selected' : ''; ?>>Recursos Humanos</option>
                 </select>
             </div>
-
             <div class="mb-3">
                 <label for="tipo" class="form-label">Tipo Documento:</label>
                 <select id="tipo" name="tipo" class="form-select" required>
-                    <?php foreach ($departamentos as $departamento): ?>
-                        <option value="<?php echo htmlspecialchars($departamento['ID']); ?>"
-                            <?php echo ($departamento['ID'] === intval($usuario['TipoDocumento_ID'])) ? 'selected' : ''; ?>>
-                            <?php echo htmlspecialchars($departamento['Nombre']); ?>
+                    <?php foreach ($tipodocumentos as $tipodocumento): ?>
+                        <option value="<?php echo htmlspecialchars($tipodocumento['ID']); ?>"
+                            <?php echo ($tipodocumento['TipoDocumento'] === $usuario['TipoDocumento']) ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($tipodocumento['TipoDocumento']); ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
@@ -221,5 +232,57 @@ $conn->close();
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Modal for success alert -->
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="successModalLabel">Actualización Exitosa</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Usuario actualizado correctamente.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Cerrar" id="closeModal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var form = document.getElementById('editUserForm');
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent the form from submitting normally
+
+                // Perform the form submission via AJAX
+                var formData = new FormData(form);
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData
+                }).then(function(response) {
+                    if (response.ok) {
+                        $('#successModal').modal('show');
+                    } else {
+                        alert('Hubo un error al actualizar el usuario.');
+                    }
+                }).catch(function(error) {
+                    console.error('Error:', error);
+                    alert('Hubo un error al actualizar el usuario.');
+                });
+            });
+
+            // Add an event listener for the close button to redirect
+            var closeModalButton = document.getElementById('closeModal');
+            closeModalButton.addEventListener('click', function() {
+                window.location.href = document.referrer; // Redirect to the previous page
+            });
+        });
+    </script>
 </body>
 </html>
